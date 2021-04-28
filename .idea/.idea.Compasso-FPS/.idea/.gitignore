@@ -1,0 +1,13 @@
+﻿# Default ignored files
+/shelf/
+/workspace.xml
+# Rider ignored files
+/projectSettingsUpdater.xml
+/contentModel.xml
+/.idea.Compasso-FPS.iml
+/modules.xml
+# Datasource local storage ignored files
+/../../../../../../../../:\Estágio\Projetos\2021.04.19-23\Compasso-FPS\.idea\.idea.Compasso-FPS\.idea/dataSources/
+/dataSources.local.xml
+# Editor-based HTTP Client requests
+/httpRequests/
