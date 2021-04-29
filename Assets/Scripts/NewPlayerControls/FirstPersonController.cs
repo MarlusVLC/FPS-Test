@@ -36,8 +36,6 @@ namespace Scripts.NewPlayerControls
         [SerializeField] private AudioClip[] m_FootstepSounds;    // an array of footstep sounds that will be randomly selected from.
         [SerializeField] private AudioClip m_JumpSound;           // the sound played when character leaves the ground.
         [SerializeField] private AudioClip m_LandSound;           // the sound played when character touches back on ground.
-        [Space(10)]
-        [SerializeField] private Gun m_Gun;
 
         private Camera m_Camera;
         private bool m_Jump;
@@ -56,13 +54,12 @@ namespace Scripts.NewPlayerControls
         private AudioSource m_AudioSource;
         private Animator m_Anim;
 
-        private List<GameObject> m_Weapons;
 
         // Use this for initialization
         private void Start()
         {
             m_CharacterController = GetComponent<CharacterController>();
-            m_Anim = GetComponentInChildren<Animator>();
+            // m_Anim = GetComponentInChildren<Animator>();
             m_Camera = Camera.main;
             m_OriginalCameraPosition = m_Camera.transform.localPosition;
             m_FovKick.Setup(m_Camera);
@@ -73,10 +70,7 @@ namespace Scripts.NewPlayerControls
             m_AudioSource = GetComponent<AudioSource>();
 			m_MouseLook.Init(transform , m_Camera.transform);
 
-            //@mArlus
-            m_Weapons = new List<GameObject>();
-            m_Weapons.AddRange(GameObject.FindGameObjectsWithTag("Weapon"));
-            SetCurrentWeapon(0);
+
             
         }
 
@@ -310,11 +304,14 @@ namespace Scripts.NewPlayerControls
             m_CharacterController.height *= m_IsCrouching ? 0.5f : 2f;
         }
 
-        private void SetCurrentWeapon(int index)
+
+        public Animator Anim
         {
-            m_Gun = m_Weapons[index].GetComponent<Gun>();
-            m_Gun.FPControl = this;
+            get => m_Anim;
+            set { m_Anim = value; }
         }
+
+
         
 
         public bool IsAiming => m_IsAiming;

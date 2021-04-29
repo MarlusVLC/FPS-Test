@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using DefaultNamespace;
 using Scripts.NewPlayerControls;
 using TMPro;
 using UnityEngine;
@@ -7,8 +8,11 @@ using Random = UnityEngine.Random;
 
 namespace Weapons
 {
-    [Serializable]
-    public class Gun : MonoBehaviour
+    [RequireComponent(typeof(New_Weapon_Recoil_Script))]
+    [RequireComponent(typeof(AudioSource))]
+    [RequireComponent(typeof(KeepTransform))]
+
+    public class Gun : Weapon
     {
         [Header("Firing System")]
         [SerializeField] float damage = 10f;
@@ -40,7 +44,7 @@ namespace Weapons
         [SerializeField] ParticleSystem muzzleFlash;
         [SerializeField] private TextMeshProUGUI currAmmoUI;
         [SerializeField] private LayerMask collectables;
-        [SerializeField] FirstPersonController fpControl;
+       
 
         private float _nextTimeToFire = 0f;
         private int _currAmmo; 
@@ -49,7 +53,6 @@ namespace Weapons
         private bool _isReloadin;
         private New_Weapon_Recoil_Script _recoil;
         
-        private Animator _anim;
         private AudioSource _audio;
 
         private float initialSpreadFactor;
@@ -59,9 +62,10 @@ namespace Weapons
         private void Start()
         {
             _recoil = GetComponent<New_Weapon_Recoil_Script>();
-            _anim = GetComponent<Animator>();
+
             _audio = GetComponent<AudioSource>();
-            
+            fpsCam = Camera.main;
+
             // muzzleFlash = transform.GetChild(0).GetComponent<ParticleSystem>();
             
             _guardedAmmo = maxGuardedAmmo; //Tirar depois
@@ -70,6 +74,11 @@ namespace Weapons
 
             UpdateUI();
 
+        }
+
+        private void Awake()
+        {
+            _anim = GetComponent<Animator>();
         }
 
         private void OnEnable()
@@ -212,10 +221,6 @@ namespace Weapons
         }
         
 
-        public FirstPersonController FPControl
-        {
-            get => fpControl;
-            set => fpControl = value;
-        }
+
     }
 }
