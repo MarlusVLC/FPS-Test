@@ -32,23 +32,25 @@ namespace Weapons
         [SerializeField] [Range(0.1f, 1.0f)] private float maximumSpreadFactor_aim = 0.3f;
 
         [Header("Reloading System")]
+        [SerializeField] private AmmoType ammoType;
         [SerializeField] int maxAmmo = 30;
-        [SerializeField] private int maxGuardedAmmo = 120;
+        // [SerializeField] private int maxGuardedAmmo = 120;
         [SerializeField] float reloadTime = 3f;
         [SerializeField] private AudioClip reloadSound;
         
         [Header("External Tools")]
         [SerializeField] Camera fpsCam;
+        [SerializeField] private AmmoReserve _ammoReserve;
         [SerializeField] ParticleSystem impactEffect;
         // [SerializeField] Animator anim;
         [SerializeField] ParticleSystem muzzleFlash;
         [SerializeField] private TextMeshProUGUI currAmmoUI;
         [SerializeField] private LayerMask collectables;
-       
+
 
         private float _nextTimeToFire = 0f;
         private int _currAmmo; 
-        private int _guardedAmmo;
+        // private int _guardedAmmo;
         private float _currSpreadFactor;
         private bool _isReloadin;
         private New_Weapon_Recoil_Script _recoil;
@@ -59,16 +61,18 @@ namespace Weapons
         private float progressiveSpreadingFactor ;
         private float maximumSpreadFactor;
 
+        // private float _currAm;
+
         private void Start()
         {
             _recoil = GetComponent<New_Weapon_Recoil_Script>();
-
             _audio = GetComponent<AudioSource>();
+            _ammoReserve = GetComponentInParent<AmmoReserve>();
             fpsCam = Camera.main;
 
             // muzzleFlash = transform.GetChild(0).GetComponent<ParticleSystem>();
             
-            _guardedAmmo = maxGuardedAmmo; //Tirar depois
+            // _guardedAmmo = maxGuardedAmmo; //Tirar depois
             _currAmmo = maxAmmo;
             _currSpreadFactor = initialSpreadFactor;
 
@@ -96,7 +100,7 @@ namespace Weapons
             if (_isReloadin)
                 return;
             
-            if (_guardedAmmo > 0 && _currAmmo < maxAmmo)
+            if (_ammoReserve.GetAmmo(ammoType) > 0 && _currAmmo < maxAmmo)
                 if (_currAmmo <= 0f || Input.GetKeyDown(KeyCode.R))
                 {
                     StartCoroutine(Reload());
@@ -177,7 +181,11 @@ namespace Weapons
 
         void UpdateUI()
         {
-            currAmmoUI.text = _currAmmo + "/" + _guardedAmmo;
+            if (_ammoReserve == null)
+            {
+                _ammoReserve = GetComponentInParent<AmmoReserve>();
+            } 
+            currAmmoUI.text = _currAmmo + "/" + _ammoReserve.GetAmmo(ammoType);
         }
 
         IEnumerator Reload()
@@ -192,8 +200,8 @@ namespace Weapons
             yield return new WaitForSeconds(.25f);
 
             var missingAmmo = maxAmmo - _currAmmo;
-            _currAmmo += Mathf.Clamp(missingAmmo, 0, _guardedAmmo);
-            _guardedAmmo = Mathf.Clamp(_guardedAmmo - missingAmmo, 0, int.MaxValue);
+            _currAmmo += Mathf.Clamp(missingAmmo, 0, _ammoReserve.GetAmmo(ammoType));
+            _ammoReserve.ClampAmmo(ammoType, missingAmmo);
 
             UpdateUI();
             _isReloadin = false;
@@ -214,11 +222,7 @@ namespace Weapons
             
         }
 
-        public void AddAmmo(int newAmmo)
-        {
-            _guardedAmmo += newAmmo;
-            UpdateUI();
-        }
+
         
 
 

@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Weapons
 {
-    public class DummyTarget : Target
+    public class DummyTarget : MonoBehaviour
     {
 
         [SerializeField] private AudioClip raiseSound;
@@ -26,18 +26,6 @@ namespace Weapons
             GameManager.GetInstance.AddTarget(this);
 
         }
-        
-        // public float health = 50f;
-        //
-        // public void TakeDamage(float amount)
-        // {
-        //     health -= amount;
-        //
-        //     if (health <= 0f)
-        //     {
-        //         Die();
-        //     }
-        // }
         
 
         private void Update()
@@ -64,11 +52,7 @@ namespace Weapons
         {
             return _dead;
         }
-        
-        // void Die()
-        // {
-        //     Destroy(gameObject);
-        // }
+
 
 
 

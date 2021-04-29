@@ -225,5 +225,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b3372ade6f91455aa96f87b8510edfdf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ammoType: 0
   guardedAmmo: 40
   collectingSound: {fileID: 8300000, guid: 96324a26a86f91f459e945bc731a1422, type: 3}

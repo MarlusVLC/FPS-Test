@@ -6,8 +6,14 @@ using Weapons;
 
 namespace DefaultNamespace
 {
+    [RequireComponent(typeof(Animator))]
+    [RequireComponent(typeof(AudioSource))]
+    [RequireComponent(typeof(BoxCollider))]
+
+    
     public class CollectableAmmo : MonoBehaviour
     {
+        [SerializeField] private AmmoType ammoType;
         [SerializeField] int guardedAmmo;
         [SerializeField] private AudioClip collectingSound;
 
@@ -26,17 +32,17 @@ namespace DefaultNamespace
         {
             if (other.CompareTag("Player"))
             {
-                Gun gun = other.GetComponentInChildren<Gun>();
+                AmmoReserve ammoReserve = other.GetComponentInChildren<AmmoReserve>();
 
-                StartCoroutine(PlaySoundAndDestroy(collectingSound, gun));
+                StartCoroutine(CollectionEndCycle(collectingSound, ammoReserve));
             }
         }
 
 
-        private IEnumerator PlaySoundAndDestroy(AudioClip sound, Gun gun)
+        private IEnumerator CollectionEndCycle(AudioClip sound, AmmoReserve ammoReserve)
         {
             _audio.PlayOneShot(collectingSound);
-            gun.AddAmmo(guardedAmmo);
+            ammoReserve.AddAmmo(ammoType, guardedAmmo);
             _renderer.enabled = false;
             _collider.enabled = false;
             yield return new WaitForSeconds(sound.length);
