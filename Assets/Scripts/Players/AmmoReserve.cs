@@ -3,13 +3,7 @@ using UnityEngine;
 
 namespace Weapons
 {
-    public enum AmmoType
-    {
-        AK47,
-        SMG,
-        GRENADE,
-        SHOTGUN,
-    }
+
     public class AmmoReserve : MonoBehaviour
     {
         [Header("Current Ammo")]

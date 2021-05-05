@@ -23,18 +23,19 @@ namespace Weapons
             _hinge = GetComponent<HingeJoint>();
             _hinge.useSpring = false;
             _audio = GetComponent<AudioSource>();
-            GameManager.GetInstance.AddTarget(this);
+            TargetManager.GetInstance.AddTarget(this);
 
         }
         
 
         private void Update()
         {
+            //Mudar a condicao, talvez usar um delegate
+            
             if (transform.localRotation.eulerAngles.x < 10 && !_dead)
             {
                 _dead = true;
             }
-
         }
 
         public IEnumerator Raise()

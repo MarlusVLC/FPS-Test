@@ -35,7 +35,6 @@ public class New_Weapon_Recoil_Script : MonoBehaviour
    [Space(10)]
    public Vector3 RotationOutput;
 
-   public bool aim;
 
    void FixedUpdate()
    {
@@ -48,9 +47,9 @@ public class New_Weapon_Recoil_Script : MonoBehaviour
        RotationOutput = Vector3.Slerp(RotationOutput, CurrentRecoil1, RotationDampTime * Time.fixedDeltaTime);
        RecoilRotationTranform.localRotation = Quaternion.Euler(RotationOutput);
    }
-   public void Fire()
+   public void AddRecoil(bool isAiming)
    {
-       if (aim)
+       if (isAiming)
        {
            CurrentRecoil1 += new Vector3(RecoilRotation_Aim.x, Random.Range(-RecoilRotation_Aim.y, RecoilRotation_Aim.y), Random.Range(-RecoilRotation_Aim.z, RecoilRotation_Aim.z));
            CurrentRecoil3 += new Vector3(Random.Range(-RecoilKickBack_Aim.x, RecoilKickBack_Aim.x), Random.Range(-RecoilKickBack_Aim.y, RecoilKickBack_Aim.y), RecoilKickBack_Aim.z);

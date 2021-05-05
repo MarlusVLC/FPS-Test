@@ -6,10 +6,7 @@ namespace DefaultNamespace
     {
         private Transform _originalTransform;
         
-        void Start()
-        {
-            // _originalTransform = transform;
-        }
+
 
         void OnEnable()
         {
@@ -17,12 +14,12 @@ namespace DefaultNamespace
             {
                 transform.position = _originalTransform.position;
                 transform.rotation = _originalTransform.rotation;
-                print("Posicao: " + transform.position);
-                print("Rotacap: " + transform.rotation);
+                // print("Posicao: " + transform.position);
+                // print("Rotacap: " + transform.rotation);
             }
             else
             {
-                print("gaaaaaaaaaaaaaaaaaaaaaaaaaaaaaay");
+                // print("gaaaaaaaaaaaaaaaaaaaaaaaaaaaaaay");
                 _originalTransform = transform;
             }
         }

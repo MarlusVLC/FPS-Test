@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Players;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UnityStandardAssets.CrossPlatformInput;
@@ -53,6 +54,7 @@ namespace Scripts.NewPlayerControls
         private bool m_Jumping;
         private AudioSource m_AudioSource;
         private Animator m_Anim;
+        
 
 
         // Use this for initialization
@@ -69,20 +71,18 @@ namespace Scripts.NewPlayerControls
             m_Jumping = false;
             m_AudioSource = GetComponent<AudioSource>();
 			m_MouseLook.Init(transform , m_Camera.transform);
-
-
-            
         }
 
 
         // Update is called once per frame
         private void Update()
         {
+            
             RotateView();
             // the jump state needs to read here to make sure it is not missed
             if (!m_Jump)
             {
-                m_Jump = CrossPlatformInputManager.GetButtonDown("Jump");
+                m_Jump = FirstPerson_InputHandler.JumpKey;
             }
 
             if (!m_PreviouslyGrounded && m_CharacterController.isGrounded)
@@ -222,17 +222,18 @@ namespace Scripts.NewPlayerControls
         private void GetInput(out float speed)
         {
             // Read input
-            float horizontal = CrossPlatformInputManager.GetAxis("Horizontal");
-            float vertical = CrossPlatformInputManager.GetAxis("Vertical");
+            float horizontal = FirstPerson_InputHandler.HorizontalMove;
+            float vertical = FirstPerson_InputHandler.VerticalMove;
+
 
             bool waswalking = m_IsWalking;
 
 #if !MOBILE_INPUT
             // On standalone builds, walk/run speed is modified by a key press.
             // keep track of whether or not the character is walking or running
-            m_IsWalking = !Input.GetKey(KeyCode.LeftShift);
+            m_IsWalking = !FirstPerson_InputHandler.SprintKey;
 
-            if (Input.GetKeyDown(KeyCode.C) && m_MoveDirXZ.magnitude <= m_WalkSpeed)
+            if (FirstPerson_InputHandler.CrouchKey && m_MoveDirXZ.magnitude <= m_WalkSpeed)
             {
                 m_IsCrouching = !m_IsCrouching;
                 ToggleCrouch();
@@ -258,7 +259,7 @@ namespace Scripts.NewPlayerControls
                 StartCoroutine(!m_IsWalking ? m_FovKick.FOVKickUp() : m_FovKick.FOVKickDown());
             }
             
-            m_IsAiming = Input.GetMouseButton(1);
+            m_IsAiming = FirstPerson_InputHandler.AimKey;
         }
 
 
@@ -311,10 +312,15 @@ namespace Scripts.NewPlayerControls
             set { m_Anim = value; }
         }
 
-
+        bool FireInputReceived()
+        {
+            return FirstPerson_InputHandler.PrimaryFireKey_Auto;
+        }
         
 
         public bool IsAiming => m_IsAiming;
+        
+        
         
     }
 }

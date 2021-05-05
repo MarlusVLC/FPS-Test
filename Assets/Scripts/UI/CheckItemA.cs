@@ -8,6 +8,10 @@ using Weapons;
 namespace UI
 {
     
+    //Separar melhro a funcao entre
+    //OBJECT_RECOGNIZEMENT para os Linecasts - isso inclui diferentes alcances pra cada arma, responsabilidade do player
+    //CROSSHAIR_MANAGER para mudanca da mira - responsabilidade da UI
+    //INPUT_ENABLER para interacao com objetos - responsabilidade do player
     public class CheckItemA : MonoBehaviour
     {
         [SerializeField] private float checkerLineDistance;

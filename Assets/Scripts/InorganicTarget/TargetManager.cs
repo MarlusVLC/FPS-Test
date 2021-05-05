@@ -6,14 +6,14 @@ using Weapons;
 
 namespace DefaultNamespace
 {
-    public class GameManager : MonoBehaviour
+    public class TargetManager : MonoBehaviour
     {
         [SerializeField] private List<DummyTarget> _targets = new List<DummyTarget>();
         
         
-        private static GameManager INSTANCE;
+        private static TargetManager INSTANCE;
 
-        public static GameManager GetInstance
+        public static TargetManager GetInstance
         {
             get => INSTANCE;
         }

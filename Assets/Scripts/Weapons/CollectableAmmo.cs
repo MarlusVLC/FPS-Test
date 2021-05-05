@@ -18,16 +18,15 @@ namespace DefaultNamespace
         [SerializeField] private AudioClip collectingSound;
 
         private AudioSource _audio;
-        private MeshRenderer _renderer;
         private BoxCollider _collider;
         
         private void Start()
         {
             _audio = GetComponent<AudioSource>();
-            _renderer = GetComponent<MeshRenderer>();
             _collider = GetComponent<BoxCollider>();
         }
 
+        
         private void OnTriggerEnter(Collider other)
         {
             if (other.CompareTag("Player"))
@@ -43,7 +42,7 @@ namespace DefaultNamespace
         {
             _audio.PlayOneShot(collectingSound);
             ammoReserve.AddAmmo(ammoType, guardedAmmo);
-            _renderer.enabled = false;
+            transform.localScale = Vector3.zero;
             _collider.enabled = false;
             yield return new WaitForSeconds(sound.length);
             Destroy(gameObject);

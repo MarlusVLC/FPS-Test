@@ -17,7 +17,7 @@ namespace DefaultNamespace
         public override void Interact()
         {
             _anim.SetTrigger("Click");
-            GameManager.GetInstance.RaiseTargets();
+            TargetManager.GetInstance.RaiseTargets();
         }
         
         

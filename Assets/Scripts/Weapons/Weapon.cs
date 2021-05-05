@@ -1,5 +1,6 @@
 ﻿using System;
 using DefaultNamespace;
+using Players;
 using Scripts.NewPlayerControls;
 using UnityEngine;
 
@@ -12,10 +13,13 @@ namespace Weapons
         [SerializeField] protected FirstPersonController fpControl;
         
         protected Animator _anim;
+        private WeaponHandler _weaponHandler;
 
 
-
-
+        public void Awake()
+        {
+            
+        }
 
 
 

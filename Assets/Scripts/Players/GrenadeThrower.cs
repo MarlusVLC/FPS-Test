@@ -1,4 +1,5 @@
 ﻿using System;
+using Players;
 using UnityEngine;
 
 namespace Weapons
@@ -14,25 +15,42 @@ namespace Weapons
 
 
         private AmmoReserve _ammoReserve;
+        
+        
+        
+        
+        
+        
 
         private void Start()
         {
             _ammoReserve = GetComponent<AmmoReserve>();
         }
+        
+        
+        
+        
+        
+        
+        
         private void Update()
         {
-            if (Input.GetMouseButtonDown(2) && _ammoReserve.Grenades > 0)
+            if (FirstPerson_InputHandler.GrenadeThrowKey && _ammoReserve.Grenades > 0)
             {
                 ThrowGrenade();
                 _ammoReserve.Grenades--;
             }
         }
 
+        
+        
+        
         private void ThrowGrenade()
         {
             GameObject grenade = Instantiate(grenadePrefab, fpsCam.transform.position, fpsCam.transform.rotation);
             Rigidbody rb = grenade.GetComponent<Rigidbody>();
             rb.AddForce(fpsCam.transform.forward * throwForce, ForceMode.Impulse);
         }
+        
     }
 }

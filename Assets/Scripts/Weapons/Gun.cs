@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using DefaultNamespace;
+using Players;
 using Scripts.NewPlayerControls;
 using TMPro;
 using UnityEngine;
@@ -12,6 +13,7 @@ namespace Weapons
     [RequireComponent(typeof(AudioSource))]
     [RequireComponent(typeof(KeepTransform))]
 
+    
     public class Gun : Weapon
     {
         [Header("Firing System")]
@@ -26,6 +28,7 @@ namespace Weapons
         [SerializeField][Range(0f,0.1f)] private float progressiveSpreadingFactor_hipfire = 0.05f;
         [SerializeField] [Range(0.1f, 1.0f)] private float maximumSpreadFactor_hipfire = 0.3f;
         
+        //O Spread deve ser reduzido pelo jogador
         [Header("Bullet Spreading System - Aiming")]
         [SerializeField][Range(0f,0.1f)] private float initialSpreadFactor_aim = 0.05f;
         [SerializeField][Range(0f,0.1f)] private float progressiveSpreadingFactor_aim = 0.05f;
@@ -34,7 +37,6 @@ namespace Weapons
         [Header("Reloading System")]
         [SerializeField] private AmmoType ammoType;
         [SerializeField] int maxAmmo = 30;
-        // [SerializeField] private int maxGuardedAmmo = 120;
         [SerializeField] float reloadTime = 3f;
         [SerializeField] private AudioClip reloadSound;
         
@@ -42,26 +44,22 @@ namespace Weapons
         [SerializeField] Camera fpsCam;
         [SerializeField] private AmmoReserve _ammoReserve;
         [SerializeField] ParticleSystem impactEffect;
-        // [SerializeField] Animator anim;
         [SerializeField] ParticleSystem muzzleFlash;
         [SerializeField] private TextMeshProUGUI currAmmoUI;
         [SerializeField] private LayerMask collectables;
 
 
-        private float _nextTimeToFire = 0f;
+        private float _nextTimeToFire;
         private int _currAmmo; 
-        // private int _guardedAmmo;
         private float _currSpreadFactor;
         private bool _isReloadin;
         private New_Weapon_Recoil_Script _recoil;
-        
         private AudioSource _audio;
 
         private float initialSpreadFactor;
         private float progressiveSpreadingFactor ;
         private float maximumSpreadFactor;
 
-        // private float _currAm;
 
         private void Start()
         {
@@ -69,73 +67,80 @@ namespace Weapons
             _audio = GetComponent<AudioSource>();
             _ammoReserve = GetComponentInParent<AmmoReserve>();
             fpsCam = Camera.main;
-
-            // muzzleFlash = transform.GetChild(0).GetComponent<ParticleSystem>();
             
-            // _guardedAmmo = maxGuardedAmmo; //Tirar depois
             _currAmmo = maxAmmo;
             _currSpreadFactor = initialSpreadFactor;
 
             UpdateUI();
-
         }
+        
+        
+        
+        
+        
 
         private void Awake()
         {
             _anim = GetComponent<Animator>();
         }
+        
+        
+        
+        
+        
 
         private void OnEnable()
         {
             _isReloadin = false;
-            // anim.SetBool("isReloadin", false);
             UpdateUI();
         }
+        
+        
+        
+        
+        
 
         private void Update()
         {
-            _anim.SetBool("isFiring", Input.GetButton("Fire1") && !_isReloadin && _currAmmo > 0);
-            _recoil.aim = FPControl.IsAiming;
+            _anim.SetBool("isFiring", CanShoot() && FireInputReceived());
 
             if (_isReloadin)
                 return;
             
-            if (_ammoReserve.GetAmmo(ammoType) > 0 && _currAmmo < maxAmmo)
-                if (_currAmmo <= 0f || Input.GetKeyDown(KeyCode.R))
+            if (CanReload())
+                if (isOutOfAmmo() || ReloadInputReceived())
                 {
                     StartCoroutine(Reload());
                     return;
                 }
             
             
-
-            if (Input.GetButton("Fire1"))
+            //Esse chamado deve ser responsdabilidade do jogador
+            if (FireInputReceived())
             {
-                if (Time.time >= _nextTimeToFire && _currAmmo > 0)
-                {
-                    SetSpreading(FPControl.IsAiming);
-                    
-                    
-                    _nextTimeToFire = Time.time + 1f / fireRate;
-                    
-                    _currSpreadFactor += progressiveSpreadingFactor;
-                    _currSpreadFactor = Mathf.Clamp(_currSpreadFactor, initialSpreadFactor, maximumSpreadFactor);
-                    
-                    // print("Spread: " + _currSpreadFactor);
-                    
-                    _recoil.Fire();
-                    _audio.PlayOneShot(fireSound);
-                    
-                    Shoot();
-                }
+                Fire();
                 return;
             }
 
-            _currSpreadFactor = initialSpreadFactor;
-            // print("Spread: " + _currSpreadFactor);
+            ResetSpreadFactor();
+        }
 
 
-            
+
+
+        bool FireInputReceived()
+        {
+            return FirstPerson_InputHandler.PrimaryFireKey_Auto;
+        }
+
+        bool CanShoot()
+        {
+            return !_isReloadin && _currAmmo > 0;
+        }
+
+        bool isOutOfAmmo()
+        {
+           return _currAmmo <= 0f;
         }
 
         void Shoot()
@@ -143,42 +148,18 @@ namespace Weapons
             muzzleFlash.Play();
 
             _currAmmo--;
-            UpdateUI();
-            
-            Vector3 shootDirection = fpsCam.transform.forward;
-
-
-            Vector3 spread = new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f));
-            spread.Normalize();
-            float multiplier = Random.Range(0f, _currSpreadFactor);
-            spread *= multiplier;
-            shootDirection += fpsCam.transform.TransformDirection(spread);
-            
+            UpdateUI(); //Responsa da UI
             
             RaycastHit hit;
-            if (Physics.Raycast(fpsCam.transform.position, shootDirection, out hit, range, 
+            if (Physics.Raycast(fpsCam.transform.position, SpreadBulletDirection(), out hit, range, 
                 ~collectables))
             {
                 // Debug.Log(hit.transform.name);
-
-                Target target = hit.transform.GetComponent<Target>();
-                if (target != null)
-                {
-                    target.TakeDamage(damage);
-                }
-
-                if (hit.rigidbody != null)
-                {
-                    hit.rigidbody.AddForce(-hit.normal * impactForce);
-                }
-                
-                ParticleSystem impactGO = Instantiate(impactEffect, hit.point, Quaternion.LookRotation(hit.normal));
-                impactGO.transform.parent = hit.transform;
+                BulletImpact(hit);
             }
         }
 
-
-
+        //Tornar responsabilidade da UI e usar DELEGATES
         void UpdateUI()
         {
             if (_ammoReserve == null)
@@ -187,7 +168,8 @@ namespace Weapons
             } 
             currAmmoUI.text = _currAmmo + "/" + _ammoReserve.GetAmmo(ammoType);
         }
-
+        
+        //Recarregar a arma deve ser responsabilidade do jogdor
         IEnumerator Reload()
         {
             _isReloadin = true;
@@ -207,6 +189,15 @@ namespace Weapons
             _isReloadin = false;
         }
 
+        bool CanReload()
+        {
+            return _ammoReserve.GetAmmo(ammoType) > 0 && _currAmmo < maxAmmo;
+        }
+
+        bool ReloadInputReceived()
+        {
+            return FirstPerson_InputHandler.ReloadKey;
+        }
         private void SetSpreading(bool isAiming)
         {
             if (isAiming)
@@ -221,6 +212,64 @@ namespace Weapons
             progressiveSpreadingFactor = progressiveSpreadingFactor_hipfire;
             
         }
+
+        private void Fire()
+        {
+            if (Time.time >= _nextTimeToFire && _currAmmo > 0)
+            {
+                SetSpreading(FPControl.IsAiming);
+                    
+                    
+                _nextTimeToFire = Time.time + 1f / fireRate;
+                    
+                _currSpreadFactor += progressiveSpreadingFactor;
+                _currSpreadFactor = Mathf.Clamp(_currSpreadFactor, initialSpreadFactor, maximumSpreadFactor);
+                
+                _recoil.AddRecoil(FPControl.IsAiming);
+                _audio.PlayOneShot(fireSound);
+                    
+                Shoot();
+            }
+        }
+        
+        private void BulletImpact(RaycastHit hitObject)
+        {
+            Target target = hitObject.transform.GetComponent<Target>();
+            if (target != null)
+            {
+                target.TakeDamage(damage);
+            }
+
+            if (hitObject.rigidbody != null)
+            {
+                hitObject.rigidbody.AddForce(-hitObject.normal * impactForce);
+            }
+                
+            ParticleSystem impactGO = Instantiate(impactEffect, hitObject.point, Quaternion.LookRotation(hitObject.normal));
+            impactGO.transform.parent = hitObject.transform;
+        }
+        
+        private Vector3 SpreadBulletDirection()
+        {
+            Vector3 shootDirection = fpsCam.transform.forward;
+
+
+            Vector3 spread = new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f));
+            spread.Normalize();
+            float multiplier = Random.Range(0f, _currSpreadFactor);
+            spread *= multiplier;
+            shootDirection += fpsCam.transform.TransformDirection(spread);
+
+            return shootDirection;
+        }
+
+        private void ResetSpreadFactor()
+        {
+            _currSpreadFactor = initialSpreadFactor;
+        }
+
+        
+        
 
 
         
