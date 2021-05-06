@@ -594,9 +594,10 @@ GameObject:
   - component: {fileID: 78743571}
   - component: {fileID: 74293747}
   - component: {fileID: 82179923}
-  - component: {fileID: 79041588}
   - component: {fileID: 80383443}
+  - component: {fileID: 79041588}
   - component: {fileID: 79041590}
+  - component: {fileID: 79041591}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -746,6 +747,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a91112c615a1490fb0071c32435983a4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &79041591
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 79041587}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7545dd7628a44ebd9be026bba8e43043, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!82 &80383443
@@ -7640,7 +7653,6 @@ MonoBehaviour:
   CurrentRecoil3: {x: 0, y: 0, z: 0}
   CurrentRecoil4: {x: 0, y: 0, z: 0}
   RotationOutput: {x: 0, y: 0, z: 0}
-  aim: 0
 --- !u!95 &697558520
 Animator:
   serializedVersion: 3
@@ -14470,7 +14482,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
   m_ReferenceResolution: {x: 800, y: 600}
@@ -15298,6 +15310,7 @@ GameObject:
   - component: {fileID: 1381122652}
   - component: {fileID: 1381122653}
   - component: {fileID: 1381122654}
+  - component: {fileID: 1381122655}
   m_Layer: 0
   m_Name: WeaponHolder
   m_TagString: Untagged
@@ -15333,8 +15346,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 316e8db3fd98428cab79b34cfaedce00, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fp_Controler: {fileID: 79041588}
-  currWeapon: {fileID: 0}
   selectedWeapon: 0
 --- !u!114 &1381122653
 MonoBehaviour:
@@ -15370,6 +15381,18 @@ MonoBehaviour:
   maxAk47: 90
   maxShotgun: 90
   maxSMG: 90
+--- !u!114 &1381122655
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1381122650}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ebad983e76a9465fa7500b9d9c5a23c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1383469749
 GameObject:
   m_ObjectHideFlags: 0
@@ -17297,7 +17320,6 @@ MonoBehaviour:
   CurrentRecoil3: {x: 0, y: 0, z: 0}
   CurrentRecoil4: {x: 0, y: 0, z: 0}
   RotationOutput: {x: 0, y: 0, z: 0}
-  aim: 0
 --- !u!114 &2052263523
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18599,7 +18621,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: -1996779653464199577, guid: 078a12cd03729cb49918ed088981ca23, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 078a12cd03729cb49918ed088981ca23, type: 3}
 --- !u!1001 &9101269141702142551
 PrefabInstance:

@@ -39,5 +39,6 @@ namespace Players
             GrenadeThrowKey = Input.GetMouseButtonDown(2);
             WeaponWheel = Input.mouseScrollDelta.y;
         }
+        
     }
 }

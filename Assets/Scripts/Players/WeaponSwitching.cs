@@ -1,15 +1,15 @@
 ﻿using System;
+using System.Diagnostics;
 using Players;
 using UnityEngine;
 using Weapons;
+using Debug = UnityEngine.Debug;
 
 namespace Scripts.NewPlayerControls
 {
     [RequireComponent(typeof(WeaponHandler))]
     public class WeaponSwitching : MonoBehaviour
     {
-        [SerializeField] private FirstPersonController fp_Controler;
-        [SerializeField] private Weapon currWeapon;
         [SerializeField] private int selectedWeapon;
         
         private WeaponHandler _weaponHandler;
@@ -17,7 +17,6 @@ namespace Scripts.NewPlayerControls
         
         void Start()
         {
-            fp_Controler = GetComponentInParent<FirstPersonController>();
             _weaponHandler = GetComponent<WeaponHandler>();
             SelectWeapon(selectedWeapon = 0);
         }
@@ -32,12 +31,13 @@ namespace Scripts.NewPlayerControls
         
         private void SelectWeapon(int index)
         {
-            int i = 0;
-            foreach (Transform weapon in _weaponHandler.heldWeapons)
+            var i = 0;
+            foreach (var weapon in _weaponHandler.HeldWeapons)
             {
+
                 if (i == index)
                 {
-                    WeaponSetup(weapon.gameObject);
+                    _weaponHandler.WeaponSetup(weapon.gameObject);
                 }
                 else
                 {
@@ -62,14 +62,7 @@ namespace Scripts.NewPlayerControls
                 SetWeaponThroughKeyboard(_selectKey);
             }
         }
-
-        private void WeaponSetup(GameObject weapon)
-        {
-            weapon.gameObject.SetActive(true);
-            currWeapon = weapon.GetComponent<Weapon>();
-            currWeapon.FPControl = fp_Controler;
-            fp_Controler.Anim = currWeapon.Anim;
-        }
+        
 
 
         private void SetWeaponThroughKeyboard(int selectKey)

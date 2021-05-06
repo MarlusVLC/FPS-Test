@@ -38,7 +38,7 @@ namespace Weapons
             if (FirstPerson_InputHandler.GrenadeThrowKey && _ammoReserve.Grenades > 0)
             {
                 ThrowGrenade();
-                _ammoReserve.Grenades--;
+                DecrementAmmo();
             }
         }
 
@@ -51,6 +51,10 @@ namespace Weapons
             Rigidbody rb = grenade.GetComponent<Rigidbody>();
             rb.AddForce(fpsCam.transform.forward * throwForce, ForceMode.Impulse);
         }
-        
+
+        private void DecrementAmmo()
+        {
+            _ammoReserve.Grenades--;
+        }
     }
 }

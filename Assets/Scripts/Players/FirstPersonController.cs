@@ -53,7 +53,7 @@ namespace Scripts.NewPlayerControls
         private float m_NextStep;
         private bool m_Jumping;
         private AudioSource m_AudioSource;
-        private Animator m_Anim;
+        private AnimationHandler m_AnimHandler;
         
 
 
@@ -61,7 +61,7 @@ namespace Scripts.NewPlayerControls
         private void Start()
         {
             m_CharacterController = GetComponent<CharacterController>();
-            // m_Anim = GetComponentInChildren<Animator>();
+            m_AnimHandler = GetComponent<AnimationHandler>();
             m_Camera = Camera.main;
             m_OriginalCameraPosition = m_Camera.transform.localPosition;
             m_FovKick.Setup(m_Camera);
@@ -146,7 +146,8 @@ namespace Scripts.NewPlayerControls
             ProgressStepCycle(speed);
             UpdateCameraPosition(speed);
             
-            HandleAnimations();
+
+            m_AnimHandler.SetMovement(m_MoveDirXZ.magnitude);
 
             m_MouseLook.UpdateCursorLock();
         }
@@ -259,7 +260,6 @@ namespace Scripts.NewPlayerControls
                 StartCoroutine(!m_IsWalking ? m_FovKick.FOVKickUp() : m_FovKick.FOVKickDown());
             }
             
-            m_IsAiming = FirstPerson_InputHandler.AimKey;
         }
 
 
@@ -285,19 +285,7 @@ namespace Scripts.NewPlayerControls
             body.AddForceAtPosition(m_CharacterController.velocity*0.1f, hit.point, ForceMode.Impulse);
         }
 
-        private void HandleAnimations()
-        {
-            m_Anim.SetFloat("Velocity", new Vector3(m_MoveDir.x,0,m_MoveDir.z).magnitude);
-            m_Anim.SetBool("isAiming", m_IsAiming);
-            if (m_IsAiming && m_Camera.fieldOfView > 40)
-            {
-                m_Camera.fieldOfView = 40;
-            }
-            else if (!m_IsAiming && m_Camera.fieldOfView <= 40)
-            {
-                m_Camera.fieldOfView = 60;
-            }
-        }
+
 
 
         private void ToggleCrouch()
@@ -305,12 +293,7 @@ namespace Scripts.NewPlayerControls
             m_CharacterController.height *= m_IsCrouching ? 0.5f : 2f;
         }
 
-
-        public Animator Anim
-        {
-            get => m_Anim;
-            set { m_Anim = value; }
-        }
+        
 
         bool FireInputReceived()
         {
