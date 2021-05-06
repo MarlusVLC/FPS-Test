@@ -88,7 +88,6 @@ namespace Weapons
 
         private void Update()
         {
-            // _anim.SetBool("isFiring", CanShoot() && FireInputReceived());
 
             if (_isReloadin)
                 return;
@@ -137,7 +136,6 @@ namespace Weapons
             if (Physics.Raycast(fpsCam.transform.position, SpreadBulletDirection(), out hit, range, 
                 ~unShootable))
             {
-                // Debug.Log(hit.transform.name);
                 BulletImpact(hit);
             }
         }
@@ -247,7 +245,7 @@ namespace Weapons
             return shootDirection;
         }
 
-        private void ResetSpreadFactor()
+        public void ResetSpreadFactor()
         {
             _currSpreadFactor = initialSpreadFactor;
         }

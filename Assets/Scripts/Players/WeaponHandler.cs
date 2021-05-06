@@ -29,12 +29,25 @@ namespace Players
 
         private void Update()
         {
+            #region Animacao
+
             _isAiming = FirstPerson_InputHandler.AimKey;
             _animHandler.SetAim(_isAiming);
             if (_currWeaponScript.CanAttack())
-                _animHandler.SetFire(FirstPerson_InputHandler.PrimaryFireKey_Auto);
+                _animHandler.SetFire(FirstPerson_InputHandler.PrimaryFireKey_Auto); 
+
+            #endregion
+
+
+            if (FirstPerson_InputHandler.PrimaryFireKey_Auto)
+            {
+                _currWeaponScript.Attack(_isAiming);
+            }
             
-            _currWeaponScript.Attack(_isAiming);
+            
+            
+
+            
         }
         
         bool FireInputReceived()

@@ -11,14 +11,13 @@ namespace Weapons
     public abstract class Weapon : MonoBehaviour
     {
         [Header("External Tools")]
-        // [SerializeField] protected FirstPersonController fpControl;
         [SerializeField] protected Camera fpsCam;
         [SerializeField] protected TextMeshProUGUI statusUI;
 
 
         
         protected Animator _anim;
-        // private WeaponHandler _weaponHandler;
+        
 
 
         protected virtual void OnEnable()
@@ -26,12 +25,7 @@ namespace Weapons
             _anim = GetComponent<Animator>();
         }
 
-
-        // public FirstPersonController FPControl
-        // {
-        //     get => fpControl;
-        //     set => fpControl = value;
-        // }
+        
         
         
         public Animator Anim
@@ -43,5 +37,7 @@ namespace Weapons
         public abstract bool CanAttack();
 
         public abstract void Attack(bool changingCondition = false);
+
+        public abstract void StopAttack();
     }
 }

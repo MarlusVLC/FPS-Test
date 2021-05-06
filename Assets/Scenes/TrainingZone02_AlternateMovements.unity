@@ -15307,10 +15307,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1381122651}
+  - component: {fileID: 1381122655}
   - component: {fileID: 1381122652}
   - component: {fileID: 1381122653}
   - component: {fileID: 1381122654}
-  - component: {fileID: 1381122655}
   m_Layer: 0
   m_Name: WeaponHolder
   m_TagString: Untagged
@@ -18068,23 +18068,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 9211950609442870287, guid: 078a12cd03729cb49918ed088981ca23, type: 3}
   m_PrefabInstance: {fileID: 8673322897625777017}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &919132149385678284 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8402798714467995317, guid: 078a12cd03729cb49918ed088981ca23, type: 3}
-  m_PrefabInstance: {fileID: 8673322897625777017}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &919132149385678285
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 919132149385678284}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dc6d08dde9b94595888279e9fd3ac9eb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &1093457960153240982
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -18519,7 +18502,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8402798714467995317, guid: 078a12cd03729cb49918ed088981ca23, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8673322896921639679, guid: 078a12cd03729cb49918ed088981ca23, type: 3}
       propertyPath: looping
