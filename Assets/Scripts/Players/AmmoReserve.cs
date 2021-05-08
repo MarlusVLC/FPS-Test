@@ -1,4 +1,5 @@
-﻿using Unity.Collections;
+﻿using System.Collections.Generic;
+using Unity.Collections;
 using UnityEngine;
 
 namespace Weapons
@@ -6,17 +7,22 @@ namespace Weapons
 
     public class AmmoReserve : MonoBehaviour
     {
-        [Header("Current Ammo")]
+        [Header("Current Ammo")] 
         [SerializeField] private int ak47 = 90;
         [SerializeField] private int smg = 120;
         [SerializeField] private int grenades = 3;
         [SerializeField] private int shotgun = 40;
-        [Header("Maximum Ammo")]
+        [Header("Maximum Ammo")] 
         public readonly int maxGrenades = 3;
         [SerializeField] private int maxAk47 = 90;
         [SerializeField] private int maxShotgun = 90;
         [SerializeField] private int maxSMG = 90;
-        
+
+        // private static readonly Dictionary<AmmoType, (int, int)> registry = new Dictionary<AmmoType, (int, int)>();
+        // {
+        //     { AmmoType.AK47, (90, 3)},
+        //
+        // }
 
         public void ClampAmmo(AmmoType ammoType, int missingAmmo = 0)
         {
@@ -70,7 +76,6 @@ namespace Weapons
                     break;
             }
             ClampAmmo(ammoType);
-            
         }
         
 

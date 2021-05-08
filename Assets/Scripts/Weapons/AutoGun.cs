@@ -37,7 +37,6 @@ namespace Weapons
 
 
         private float _nextTimeToFire;
-        private int _currAmmo; 
         private float _currSpreadFactor;
         private bool _isReloadin;
         private New_Weapon_Recoil_Script _recoil;
@@ -50,45 +49,26 @@ namespace Weapons
         
         
 
-        protected void Start()
+        protected override void Start()
         {
+            base.Start();
             _recoil = GetComponent<New_Weapon_Recoil_Script>();
             _audio = GetComponent<AudioSource>();
-            _ammoReserve = GetComponentInParent<AmmoReserve>();
-            fpsCam = Camera.main;
             
             _currAmmo = maxAmmo;
             _currSpreadFactor = initialSpreadFactor;
-
-            UpdateUI();
         }
         
-        
-        
-        
-        
-
-
-        
-        
-        
-        
-        
-
-        private void OnEnable()
+        protected override void OnEnable()
         {
+            base.OnEnable();
             _isReloadin = false;
-            UpdateUI();
         }
         
-        
-        
-        
-        
-
-        private void Update()
+        protected override void Update()
         {
-
+            base.Update();
+            
             if (_isReloadin)
                 return;
             
@@ -96,25 +76,11 @@ namespace Weapons
                 if (isOutOfAmmo() || ReloadInputReceived())
                 {
                     StartCoroutine(Reload());
-                    return;
                 }
-            
-            
-            //Esse chamado deve ser responsdabilidade do jogador
-            if (FireInputReceived())
-            {
-                Fire();
-                return;
-            }
-
-            ResetSpreadFactor();
         }
 
 
-
-
-
-
+        
         protected override bool CanShoot()
         {
             return !_isReloadin && _currAmmo > 0;
@@ -130,27 +96,16 @@ namespace Weapons
             muzzleFlash.Play();
 
             _currAmmo--;
-            UpdateUI(); //Responsa da UI
-            
+            // OnAmmoChanged(_currAmmo, _ammoReserve.GetAmmo(ammoType));
+
             RaycastHit hit;
-            if (Physics.Raycast(fpsCam.transform.position, SpreadBulletDirection(), out hit, range, 
+            if (Physics.Raycast(_fpsCam.transform.position, SpreadBulletDirection(), out hit, range, 
                 ~unShootable))
             {
                 BulletImpact(hit);
             }
         }
-
-        //Tornar responsabilidade da UI e usar DELEGATES
-        void UpdateUI()
-        {
-            if (_ammoReserve == null)
-            {
-                _ammoReserve = GetComponentInParent<AmmoReserve>();
-            } 
-            statusUI.text = _currAmmo + "/" + _ammoReserve.GetAmmo(ammoType);
-        }
         
-        //Recarregar a arma deve ser responsabilidade do jogdor
         IEnumerator Reload()
         {
             _isReloadin = true;
@@ -166,7 +121,7 @@ namespace Weapons
             _currAmmo += Mathf.Clamp(missingAmmo, 0, _ammoReserve.GetAmmo(ammoType));
             _ammoReserve.ClampAmmo(ammoType, missingAmmo);
 
-            UpdateUI();
+            // OnAmmoChanged(_currAmmo, _ammoReserve.GetAmmo(ammoType));
             _isReloadin = false;
         }
 
@@ -192,26 +147,30 @@ namespace Weapons
             initialSpreadFactor = initialSpreadFactor_hipfire;
             maximumSpreadFactor = maximumSpreadFactor_hipfire;
             progressiveSpreadingFactor = progressiveSpreadingFactor_hipfire;
-            
         }
 
-        protected override void Fire(bool isAiming)
+        protected override void Fire(bool inputReceived, bool isAiming)
         {
-            if (Time.time >= _nextTimeToFire && _currAmmo > 0)
+            if (inputReceived)
             {
-                SetSpreading(isAiming);
+                if (Time.time >= _nextTimeToFire && _currAmmo > 0)
+                {
+                    SetSpreading(isAiming);
                     
                     
-                _nextTimeToFire = Time.time + 1f / fireRate;
+                    _nextTimeToFire = Time.time + 1f / fireRate;
                     
-                _currSpreadFactor += progressiveSpreadingFactor;
-                _currSpreadFactor = Mathf.Clamp(_currSpreadFactor, initialSpreadFactor, maximumSpreadFactor);
+                    _currSpreadFactor += progressiveSpreadingFactor;
+                    _currSpreadFactor = Mathf.Clamp(_currSpreadFactor, initialSpreadFactor, maximumSpreadFactor);
                 
-                _recoil.AddRecoil(isAiming);
-                _audio.PlayOneShot(fireSound);
+                    _recoil.AddRecoil(isAiming);
+                    _audio.PlayOneShot(fireSound);
                     
-                Shoot();
+                    Shoot();
+                }
+                return;
             }
+            ResetSpreadFactor();
         }
         
         private void BulletImpact(RaycastHit hitObject)
@@ -233,14 +192,14 @@ namespace Weapons
         
         private Vector3 SpreadBulletDirection()
         {
-            Vector3 shootDirection = fpsCam.transform.forward;
+            Vector3 shootDirection = _fpsCam.transform.forward;
 
 
             Vector3 spread = new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f));
             spread.Normalize();
             float multiplier = Random.Range(0f, _currSpreadFactor);
             spread *= multiplier;
-            shootDirection += fpsCam.transform.TransformDirection(spread);
+            shootDirection += _fpsCam.transform.TransformDirection(spread);
 
             return shootDirection;
         }

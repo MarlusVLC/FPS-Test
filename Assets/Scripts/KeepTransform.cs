@@ -14,12 +14,9 @@ namespace DefaultNamespace
             {
                 transform.position = _originalTransform.position;
                 transform.rotation = _originalTransform.rotation;
-                // print("Posicao: " + transform.position);
-                // print("Rotacap: " + transform.rotation);
             }
             else
             {
-                // print("gaaaaaaaaaaaaaaaaaaaaaaaaaaaaaay");
                 _originalTransform = transform;
             }
         }

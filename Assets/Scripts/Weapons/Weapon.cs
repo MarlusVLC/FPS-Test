@@ -10,21 +10,20 @@ namespace Weapons
     [RequireComponent(typeof(Animator))]
     public abstract class Weapon : MonoBehaviour
     {
-        [Header("External Tools")]
-        [SerializeField] protected Camera fpsCam;
-        [SerializeField] protected TextMeshProUGUI statusUI;
-
-
-        
+        protected Camera _fpsCam;
         protected Animator _anim;
+
+        protected virtual void Start()
+        {
+            _fpsCam = Camera.main;
+        }
         
-
-
         protected virtual void OnEnable()
         {
             _anim = GetComponent<Animator>();
         }
 
+        
         
         
         
@@ -36,8 +35,6 @@ namespace Weapons
 
         public abstract bool CanAttack();
 
-        public abstract void Attack(bool changingCondition = false);
-
-        public abstract void StopAttack();
+        public abstract void Attack(bool inputReceived, bool changingCondition = false);
     }
 }

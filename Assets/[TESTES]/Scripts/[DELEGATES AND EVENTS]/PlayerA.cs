@@ -36,13 +36,7 @@ namespace Scripts
 
         private MyDelegate _myDelegate;
 
-
-        // private void Start()
-        // {
-        //     _myDelegate += Funcao;
-        //     _myDelegate();
-        // }
-
+        
 
         private void Update()
         {

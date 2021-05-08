@@ -12,7 +12,7 @@ namespace Players
 
         private bool _isAiming;
         private Weapon _currWeaponScript;
-        private FirstPersonController _fp_Controler;
+        // private FirstPersonController _fp_Controler;
         private AnimationHandler _animHandler;
 
         private void Awake()
@@ -24,7 +24,7 @@ namespace Players
 
         private void Start()
         {
-            _fp_Controler = GetComponentInParent<FirstPersonController>();
+            // _fp_Controler = GetComponentInParent<FirstPersonController>();
         }
 
         private void Update()
@@ -39,25 +39,16 @@ namespace Players
             #endregion
 
 
-            if (FirstPerson_InputHandler.PrimaryFireKey_Auto)
-            {
-                _currWeaponScript.Attack(_isAiming);
-            }
-            
-            
-            
 
-            
+            _currWeaponScript.Attack(FirstPerson_InputHandler.PrimaryFireKey_Auto,_isAiming);
         }
         
-        bool FireInputReceived()
-        {
-            return FirstPerson_InputHandler.PrimaryFireKey_Auto;
-        }
-
-
+        
+        
         #region WeaponManagement
 
+        
+        
         private void AddHeldWeapon(Transform weapon)
         {
             if (weapon.GetComponent<Weapon>() == null)
@@ -96,11 +87,5 @@ namespace Players
         }
 
         #endregion
-        
-        
-
-        
-
-
     }
 }

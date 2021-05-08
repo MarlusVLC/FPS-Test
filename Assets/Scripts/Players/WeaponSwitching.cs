@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Diagnostics;
 using Players;
 using UnityEngine;
-using Weapons;
-using Debug = UnityEngine.Debug;
+
 
 namespace Scripts.NewPlayerControls
 {
