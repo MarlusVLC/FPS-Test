@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using DefaultNamespace;
 using Players;
 using Scripts.NewPlayerControls;
@@ -8,20 +9,24 @@ using UnityEngine;
 namespace Weapons
 {
     [RequireComponent(typeof(Animator))]
+    [RequireComponent(typeof(AudioSource))]
     public abstract class Weapon : MonoBehaviour
     {
         protected Camera _fpsCam;
         protected Animator _anim;
+        public AttackType AttackType { get; protected set; }
+
+
+        protected virtual void Awake()
+        {
+            _anim = GetComponent<Animator>();
+        }
 
         protected virtual void Start()
         {
             _fpsCam = Camera.main;
         }
         
-        protected virtual void OnEnable()
-        {
-            _anim = GetComponent<Animator>();
-        }
 
         
         
@@ -35,6 +40,10 @@ namespace Weapons
 
         public abstract bool CanAttack();
 
+        public abstract bool CanExecSpecialAction0();
+
         public abstract void Attack(bool inputReceived, bool changingCondition = false);
+
+        public abstract void ExecSpecialAction0();
     }
 }

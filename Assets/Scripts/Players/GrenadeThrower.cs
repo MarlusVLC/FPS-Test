@@ -8,53 +8,44 @@ namespace Weapons
     public class GrenadeThrower : MonoBehaviour
     {
         [SerializeField] float throwForce = 20f;
+        [SerializeField] private AudioClip throwSound;
         [SerializeField] GameObject grenadePrefab;
 
         [Header("ExternalAssets")] 
         [SerializeField] private GameObject fpsCam;
-
-
+        
         private AmmoReserve _ammoReserve;
-        
-        
-        
-        
+        private AudioSource _audio;
         
         
 
         private void Start()
         {
             _ammoReserve = GetComponent<AmmoReserve>();
+            _audio = GetComponentInParent<AudioSource>();
         }
-        
-        
-        
-        
-        
-        
-        
-        private void Update()
-        {
-            if (FirstPerson_InputHandler.GrenadeThrowKey && _ammoReserve.Grenades > 0)
-            {
-                ThrowGrenade();
-                DecrementAmmo();
-            }
-        }
-
         
         
         
         private void ThrowGrenade()
         {
+            _audio.PlayOneShot(throwSound);
             GameObject grenade = Instantiate(grenadePrefab, fpsCam.transform.position, fpsCam.transform.rotation);
-            Rigidbody rb = grenade.GetComponent<Rigidbody>();
-            rb.AddForce(fpsCam.transform.forward * throwForce, ForceMode.Impulse);
+            grenade.GetComponent<Rigidbody>().AddForce(fpsCam.transform.forward * throwForce, ForceMode.Impulse);
         }
 
         private void DecrementAmmo()
         {
             _ammoReserve.Grenades--;
+        }
+
+        public void GrenadeThrowProcess()
+        {
+            if (_ammoReserve.Grenades > 0)
+            {
+                ThrowGrenade();
+                DecrementAmmo();
+            }
         }
     }
 }

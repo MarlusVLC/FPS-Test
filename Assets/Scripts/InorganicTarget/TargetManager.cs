@@ -17,6 +17,8 @@ namespace DefaultNamespace
         {
             get => INSTANCE;
         }
+        
+        
 
         private void Awake()
         {

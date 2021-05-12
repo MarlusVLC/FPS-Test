@@ -13,6 +13,7 @@ namespace Players
         {
             _fpCam = GetComponentInChildren<Camera>(); 
         }
+        
 
         public Animator Anim
         {
@@ -23,7 +24,6 @@ namespace Players
         
         public void SetMovement(float speed)
         {
-            //new Vector3(m_MoveDir.x,0,m_MoveDir.z).magnitude
             _anim.SetFloat("Velocity", speed);
         }
 

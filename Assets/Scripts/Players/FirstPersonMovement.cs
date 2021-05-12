@@ -14,7 +14,7 @@ namespace Scripts.NewPlayerControls
 {
     [RequireComponent(typeof (CharacterController))]
     [RequireComponent(typeof (AudioSource))]
-    public class FirstPersonController : MonoBehaviour
+    public class FirstPersonMovement : MonoBehaviour
     {
         [SerializeField] private bool m_IsWalking;
         [SerializeField] private bool m_IsCrouching;
@@ -26,7 +26,6 @@ namespace Scripts.NewPlayerControls
         [SerializeField] private float m_StickToGroundForce;
         [SerializeField] private float m_GravityMultiplier;
         [Space(10)] 
-        [SerializeField] private bool m_IsAiming;
         [SerializeField] private MouseLook m_MouseLook;
         [SerializeField] private bool m_UseFovKick;
         [SerializeField] private FOVKick m_FovKick = new FOVKick();
@@ -40,8 +39,6 @@ namespace Scripts.NewPlayerControls
 
         private Camera m_Camera;
         private bool m_Jump;
-        private float m_YRotation;
-        private float m_NormalHeight;
         private Vector2 m_Input;
         private Vector3 m_MoveDir = Vector3.zero;
         private Vector3 m_MoveDirXZ = Vector3.zero;
@@ -57,7 +54,6 @@ namespace Scripts.NewPlayerControls
         
 
 
-        // Use this for initialization
         private void Start()
         {
             m_CharacterController = GetComponent<CharacterController>();
@@ -73,17 +69,10 @@ namespace Scripts.NewPlayerControls
 			m_MouseLook.Init(transform , m_Camera.transform);
         }
 
-
-        // Update is called once per frame
         private void Update()
         {
             
             RotateView();
-            // the jump state needs to read here to make sure it is not missed
-            if (!m_Jump)
-            {
-                m_Jump = FirstPerson_InputHandler.JumpKey;
-            }
 
             if (!m_PreviouslyGrounded && m_CharacterController.isGrounded)
             {
@@ -99,20 +88,11 @@ namespace Scripts.NewPlayerControls
 
             m_PreviouslyGrounded = m_CharacterController.isGrounded;
         }
-
-
-        private void PlayLandingSound()
-        {
-            m_AudioSource.clip = m_LandSound;
-            m_AudioSource.Play();
-            m_NextStep = m_StepCycle + .5f;
-        }
-
-
+        
         private void FixedUpdate()
         {
             float speed;
-            GetInput(out speed);
+            DefineMovement(out speed);
             // always move along the camera forward as it is the direction that it being aimed at
             Vector3 desiredMove = transform.forward*m_Input.y + transform.right*m_Input.x;
 
@@ -152,12 +132,39 @@ namespace Scripts.NewPlayerControls
             m_MouseLook.UpdateCursorLock();
         }
 
+        
+        
+
+        private void PlayFootStepAudio()
+        {
+            if (!m_CharacterController.isGrounded)
+            {
+                return;
+            }
+            // pick & play a random footstep sound from the array,
+            // excluding sound at index 0
+            int n = Random.Range(1, m_FootstepSounds.Length);
+            m_AudioSource.clip = m_FootstepSounds[n];
+            m_AudioSource.PlayOneShot(m_AudioSource.clip);
+            // move picked sound to index 0 so it's not picked next time
+            m_FootstepSounds[n] = m_FootstepSounds[0];
+            m_FootstepSounds[0] = m_AudioSource.clip;
+        }
 
         private void PlayJumpSound()
         {
             m_AudioSource.clip = m_JumpSound;
             m_AudioSource.Play();
         }
+        
+        private void PlayLandingSound()
+        {
+            m_AudioSource.clip = m_LandSound;
+            m_AudioSource.Play();
+            m_NextStep = m_StepCycle + .5f;
+        }
+
+        
 
 
         private void ProgressStepCycle(float speed)
@@ -177,25 +184,7 @@ namespace Scripts.NewPlayerControls
 
             PlayFootStepAudio();
         }
-
-
-        private void PlayFootStepAudio()
-        {
-            if (!m_CharacterController.isGrounded)
-            {
-                return;
-            }
-            // pick & play a random footstep sound from the array,
-            // excluding sound at index 0
-            int n = Random.Range(1, m_FootstepSounds.Length);
-            m_AudioSource.clip = m_FootstepSounds[n];
-            m_AudioSource.PlayOneShot(m_AudioSource.clip);
-            // move picked sound to index 0 so it's not picked next time
-            m_FootstepSounds[n] = m_FootstepSounds[0];
-            m_FootstepSounds[0] = m_AudioSource.clip;
-        }
-
-
+        
         private void UpdateCameraPosition(float speed)
         {
             Vector3 newCameraPosition;
@@ -220,40 +209,19 @@ namespace Scripts.NewPlayerControls
         }
 
 
-        private void GetInput(out float speed)
+        private void DefineMovement(out float speed)
         {
-            // Read input
-            float horizontal = FirstPerson_InputHandler.HorizontalMove;
-            float vertical = FirstPerson_InputHandler.VerticalMove;
-
-
             bool waswalking = m_IsWalking;
-
-#if !MOBILE_INPUT
-            // On standalone builds, walk/run speed is modified by a key press.
-            // keep track of whether or not the character is walking or running
-            m_IsWalking = !FirstPerson_InputHandler.SprintKey;
-
-            if (FirstPerson_InputHandler.CrouchKey && m_MoveDirXZ.magnitude <= m_WalkSpeed)
-            {
-                m_IsCrouching = !m_IsCrouching;
-                ToggleCrouch();
-            }
-#endif
-            // set the desired speed to be walking or running
+            
             speed = m_IsWalking ? m_WalkSpeed : m_RunSpeed;
             speed = m_IsCrouching ? m_CrouchSpeed : speed;
             
-            m_Input = new Vector2(horizontal, vertical);
-
-            // normalize input if it exceeds 1 in combined length:
+            
             if (m_Input.sqrMagnitude > 1)
             {
                 m_Input.Normalize();
             }
-
-            // handle speed change to give an fov kick
-            // only if the player is going to a run, is running and the fovkick is to be used
+            
             if (m_IsWalking != waswalking && m_UseFovKick && m_CharacterController.velocity.sqrMagnitude > 0)
             {
                 StopAllCoroutines();
@@ -284,26 +252,34 @@ namespace Scripts.NewPlayerControls
             }
             body.AddForceAtPosition(m_CharacterController.velocity*0.1f, hit.point, ForceMode.Impulse);
         }
-
-
-
-
-        private void ToggleCrouch()
+        
+        public void ToggleCrouch()
         {
+            m_IsCrouching = !m_IsCrouching;
             m_CharacterController.height *= m_IsCrouching ? 0.5f : 2f;
         }
-
+        
+        
+        
         
 
-        bool FireInputReceived()
+        public bool Jump
         {
-            return FirstPerson_InputHandler.PrimaryFireKey_Auto;
+            get => m_Jump;
+            set => m_Jump = value;
         }
         
 
-        public bool IsAiming => m_IsAiming;
-        
-        
-        
+
+        public bool IsWalking
+        {
+            get => m_IsWalking;
+            set => m_IsWalking = value;
+        }
+
+        public void SetMovementOrientation(float x, float z)
+        {
+            m_Input = new Vector2(x, z);
+        }
     }
 }

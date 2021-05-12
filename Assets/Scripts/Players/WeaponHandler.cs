@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Scripts.NewPlayerControls;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using Weapons;
 
@@ -8,84 +6,111 @@ namespace Players
 {
     public class WeaponHandler : MonoBehaviour
     {
-        public List<Transform> HeldWeapons { get; private set; }
+        public List<Weapon> HeldWeapons { get; private set; }
+        public Weapon CurrWeapon { get; private set;}
+        
+        private AnimationHandler AnimHandler;
+        private int _selectedWeapon;
 
-        private bool _isAiming;
-        private Weapon _currWeaponScript;
-        // private FirstPersonController _fp_Controler;
-        private AnimationHandler _animHandler;
-
+        
+        
         private void Awake()
         {
-            HeldWeapons = new List<Transform>();
-            AddAllWeapon();
-            _animHandler = GetComponentInParent<AnimationHandler>();
+            HeldWeapons = new List<Weapon>();
+            AddAllWeapons();
+            AnimHandler = GetComponentInParent<AnimationHandler>();
+            EnableWeapon(_selectedWeapon = 0);
         }
 
-        private void Start()
+
+
+        #region --WeaponManagement--
+
+        
+        
+        private void AddHeldWeapon(Weapon weapon)
         {
-            // _fp_Controler = GetComponentInParent<FirstPersonController>();
-        }
-
-        private void Update()
-        {
-            #region Animacao
-
-            _isAiming = FirstPerson_InputHandler.AimKey;
-            _animHandler.SetAim(_isAiming);
-            if (_currWeaponScript.CanAttack())
-                _animHandler.SetFire(FirstPerson_InputHandler.PrimaryFireKey_Auto); 
-
-            #endregion
-
-
-
-            _currWeaponScript.Attack(FirstPerson_InputHandler.PrimaryFireKey_Auto,_isAiming);
-        }
-        
-        
-        
-        #region WeaponManagement
-
-        
-        
-        private void AddHeldWeapon(Transform weapon)
-        {
-            if (weapon.GetComponent<Weapon>() == null)
-            {
-                throw new AccessViolationException("Only weapons can be associated in the HeldWeapons list");
-            }
-            
             HeldWeapons.Add(weapon);
         }
 
-        private void AddAllWeapon()
+        private void AddAllWeapons()
         {
             foreach (Transform child in transform)
             {
-                AddHeldWeapon(child);
+                AddHeldWeapon(child.GetComponent<Weapon>());
             }
         }
 
-        public int CountWeapons()
+        private int CountWeapons()
         {
             return HeldWeapons.Count;
         }
-
-        public Weapon CurrWeaponScript
-        {
-            get => _currWeaponScript;
-            set => _currWeaponScript = value;
-        }
         
-        public void WeaponSetup(GameObject weapon)
+        private void WeaponSetup(Weapon weapon)
         {
             weapon.gameObject.SetActive(true);
-            _currWeaponScript = weapon.GetComponent<Weapon>();
-            // _currWeaponScript.FPControl = _fp_Controler;
-            _animHandler.Anim = weapon.GetComponent<Animator>();
+            CurrWeapon = weapon;
+            AnimHandler.Anim = weapon.Anim;
         }
 
+        
+        
+        
         #endregion
+        
+        
+        
+        
+        
+        #region --WeaponSwitching--
+        
+        
+        
+        
+        private void EnableWeapon(int index)
+        {
+            var i = 0;
+            foreach (var weapon in HeldWeapons)
+            {
+
+                if (i == index)
+                {
+                    WeaponSetup(weapon);
+                }
+                else
+                {
+                    weapon.gameObject.SetActive(false);
+                }
+                i++;
+            }
+        }
+        
+        public void SetWeaponThroughKeyboard(int selectKey)
+        {
+            if (selectKey > 0 && selectKey <= CountWeapons())
+            {
+                _selectedWeapon = selectKey-1;
+                EnableWeapon(_selectedWeapon);
+            }
+        }
+        
+        public void SetWeaponThroughMousewheel(int selectKey)
+        {
+            _selectedWeapon += selectKey;
+            if (_selectedWeapon < 0)
+            {
+                _selectedWeapon = CountWeapons() - 1;
+            }
+            else
+            {
+                _selectedWeapon %= CountWeapons();
+            }
+            EnableWeapon(_selectedWeapon);
+        }
+        
+        
+        
+        #endregion
+        
     }
 }

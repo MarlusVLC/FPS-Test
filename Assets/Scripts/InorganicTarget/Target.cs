@@ -20,7 +20,7 @@ namespace Weapons
 
             if (health <= 0f)
             {
-                if (_destructible != null)
+                if (_destructible)
                 {
                     _destructible.Die();
                 }

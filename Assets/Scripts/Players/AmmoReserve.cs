@@ -58,7 +58,7 @@ namespace Weapons
             }
         }
 
-        public void AddAmmo(AmmoType ammoType, int newAmmo)
+        public void ComplementAmmo(AmmoType ammoType, int newAmmo)
         {
             switch (ammoType)
             {

@@ -50,7 +50,7 @@ namespace UI
             else if (Physics.Linecast(transform.position, transform.position + transform.forward * 10,
                 out hit, interactablesMask))
             {
-                if (_interactable == null)
+                if (_interactable is null)
                 {
                     _interactable = hit.collider.gameObject.GetComponent<Interactive>();
                 }

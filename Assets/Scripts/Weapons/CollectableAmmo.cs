@@ -41,7 +41,7 @@ namespace DefaultNamespace
         private IEnumerator CollectionEndCycle(AudioClip sound, AmmoReserve ammoReserve)
         {
             _audio.PlayOneShot(collectingSound);
-            ammoReserve.AddAmmo(ammoType, guardedAmmo);
+            ammoReserve.ComplementAmmo(ammoType, guardedAmmo);
             transform.localScale = Vector3.zero;
             _collider.enabled = false;
             yield return new WaitForSeconds(sound.length);

@@ -1,11 +1,11 @@
-using System.Collections;
-using System.Collections.Generic;
+
 using UnityEngine;
+using UnityEngine.UIElements;
 
 
 //Author: @DogSayingWoosh
 //link: https://youtu.be/p9t044U4i5E    &&   https://hatebin.com/hwbhihougq
-public class New_Weapon_Recoil_Script : MonoBehaviour
+public class RecoilEffector : MonoBehaviour
 {
     
     
@@ -34,6 +34,7 @@ public class New_Weapon_Recoil_Script : MonoBehaviour
    public Vector3 CurrentRecoil4;
    [Space(10)]
    public Vector3 RotationOutput;
+   
 
 
    void FixedUpdate()

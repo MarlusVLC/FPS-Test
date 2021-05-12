@@ -27,7 +27,6 @@ namespace Weapons
 
         }
         
-
         private void Update()
         {
             //Mudar a condicao, talvez usar um delegate
