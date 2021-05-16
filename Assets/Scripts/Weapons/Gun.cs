@@ -34,7 +34,7 @@ namespace Weapons
         protected AudioSource _audio;
         protected RecoilEffector _recoil;
 
-        public static event Action<int, int> AmmoChanged;
+        public event Action<int, int> AmmoChanged;
         
 
         protected override void Awake()
@@ -64,7 +64,7 @@ namespace Weapons
                 SetPreviousAmmo();
             }
             
-            if (isOutOfAmmo())
+            if (IsOutOfAmmo())
             {
                 StartCoroutine(Reload());
             }
@@ -81,7 +81,7 @@ namespace Weapons
             return !_isReloadin && _currAmmo > 0;
         }
         
-        protected abstract void Fire(bool inputReceived, bool isAiming);
+        protected abstract void Fire(Transform shotOrigin, bool inputReceived, bool isAiming);
         
         
         
@@ -109,7 +109,7 @@ namespace Weapons
             AmmoChanged?.Invoke(currAmmo, reserveAmmo);
         }
         
-        private bool isOutOfAmmo()
+        private bool IsOutOfAmmo()
         {
             return _currAmmo <= 0f && !_isReloadin;
         }
@@ -132,16 +132,16 @@ namespace Weapons
             impactGO.transform.parent = hitObject.transform;
         }
         
-        protected Vector3 SpreadBulletDirection(float spreadMultiplier)
+        protected Vector3 SpreadProjectileDirection(Transform shotOrigin, float spreadMultiplier)
         {
-            Vector3 shootDirection = _fpsCam.transform.forward;
+            Vector3 shootDirection = shotOrigin.forward;
 
 
             Vector3 spread = new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f));
             spread.Normalize();
             float multiplier = Random.Range(0f, spreadMultiplier);
             spread *= multiplier;
-            shootDirection += _fpsCam.transform.TransformDirection(spread);
+            shootDirection += shotOrigin.TransformDirection(spread);
 
             return shootDirection;
         }
@@ -154,9 +154,9 @@ namespace Weapons
             return CanShoot();
         }
         
-        public override void Attack(bool inputReceived, bool stoppingCondition = false)
+        public override void Attack(Transform eyeOrigin, bool inputReceived, bool changingCondition = false)
         {
-            Fire(inputReceived, stoppingCondition);
+            Fire(eyeOrigin, inputReceived, changingCondition);
         }
 
         public override bool CanExecSpecialAction0()

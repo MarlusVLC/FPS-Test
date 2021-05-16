@@ -25,8 +25,7 @@ namespace Weapons
             return !_isPumping;
         }
 
-        protected override void Fire(bool inputReceived, bool isAiming)
-        {
+        protected override void Fire(Transform aimOrigin, bool inputReceived, bool isAiming)        {
             if (inputReceived)
             {
                 if (_isReloadin)
@@ -45,7 +44,7 @@ namespace Weapons
 
                 for (int i = 0; i <= numberOfPellets; i++)
                 {
-                    if (Physics.Raycast(_fpsCam.transform.position, SpreadBulletDirection(spreadRadius), out hit, range,
+                    if (Physics.Raycast(aimOrigin.position, SpreadProjectileDirection(aimOrigin, spreadRadius), out hit, range,
                         ~unShootable))
                     {
                         BulletImpact(hit);
@@ -84,7 +83,6 @@ namespace Weapons
                     _anim.SetBool("isReloadin", false);
                     yield break;
                 }
-                print(_currAmmo < maxAmmo);
                 _audio.PlayOneShot(pelletSound);
                 yield return new WaitForSeconds(_anim.GetCurrentAnimatorClipInfo(3).Length);
                 _currAmmo++;

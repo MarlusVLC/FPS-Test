@@ -1,4 +1,5 @@
 ﻿using System;
+using Players;
 using TMPro;
 using UnityEngine;
 using Weapons;
@@ -7,6 +8,7 @@ namespace UI
 {
     public class AmmoText : MonoBehaviour
     {
+        [SerializeField] WeaponHandler playerWeaponHandler;
         private TextMeshProUGUI statusUI;
 
 
@@ -17,12 +19,14 @@ namespace UI
         
         private void OnEnable()
         {
-            Gun.AmmoChanged += UpdateText;
+            // Gun.AmmoChanged += UpdateText;
+
+            AssignPlayerWeapons();
         }
 
         private void OnDisable()
         {
-            Gun.AmmoChanged -= UpdateText;
+            DeAssignPlayerWeapons();
         }
         
         
@@ -30,6 +34,23 @@ namespace UI
         private void UpdateText(int currAmmo, int reserveAmmo)
         {
             statusUI.text = currAmmo + "/" + reserveAmmo;
+        }
+
+
+        private void AssignPlayerWeapons()
+        {
+            foreach (Gun weapon in playerWeaponHandler.HeldWeapons)
+            {
+                weapon.AmmoChanged += UpdateText;
+            }
+        }
+        
+        private void DeAssignPlayerWeapons()
+        {
+            foreach (Gun weapon in playerWeaponHandler.HeldWeapons)
+            {
+                weapon.AmmoChanged -= UpdateText;
+            }
         }
         
         

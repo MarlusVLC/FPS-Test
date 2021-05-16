@@ -1,6 +1,9 @@
 
+using System;
+using Players;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Random = UnityEngine.Random;
 
 
 //Author: @DogSayingWoosh
@@ -8,11 +11,7 @@ using UnityEngine.UIElements;
 public class RecoilEffector : MonoBehaviour
 {
     
-    
-   [Header("Recoil_Transform")]
-   public Transform RecoilPositionTranform;
-   public Transform RecoilRotationTranform;
-   [Space(10)]
+    [Space(10)]
    [Header("Recoil_Settings")]
    public float PositionDampTime;
    public float RotationDampTime;
@@ -34,8 +33,14 @@ public class RecoilEffector : MonoBehaviour
    public Vector3 CurrentRecoil4;
    [Space(10)]
    public Vector3 RotationOutput;
-   
 
+
+   private CombatantData _combatData;
+
+   private void Awake()
+   {
+       _combatData = GetComponentInParent<CombatantData>();
+   }
 
    void FixedUpdate()
    {
@@ -43,11 +48,11 @@ public class RecoilEffector : MonoBehaviour
        CurrentRecoil2 = Vector3.Lerp(CurrentRecoil2, CurrentRecoil1, Recoil2 * Time.deltaTime);
        CurrentRecoil3 = Vector3.Lerp(CurrentRecoil3, Vector3.zero, Recoil3 * Time.deltaTime);
        CurrentRecoil4 = Vector3.Lerp(CurrentRecoil4, CurrentRecoil3, Recoil4 * Time.deltaTime);
-
-       RecoilPositionTranform.localPosition = Vector3.Slerp(RecoilPositionTranform.localPosition, CurrentRecoil3, PositionDampTime * Time.fixedDeltaTime);
+       
+       _combatData.RecoilPosition.localPosition = Vector3.Slerp( _combatData.RecoilPosition.localPosition, CurrentRecoil3, PositionDampTime * Time.fixedDeltaTime);
        RotationOutput = Vector3.Slerp(RotationOutput, CurrentRecoil1, RotationDampTime * Time.fixedDeltaTime);
-       RecoilRotationTranform.localRotation = Quaternion.Euler(RotationOutput);
-   }
+       _combatData.RecoilRotation.localRotation = Quaternion.Euler(RotationOutput);
+       }
    public void AddRecoil(bool isAiming)
    {
        if (isAiming)
@@ -61,5 +66,6 @@ public class RecoilEffector : MonoBehaviour
            CurrentRecoil3 += new Vector3(Random.Range(-RecoilKickBack.x, RecoilKickBack.x), Random.Range(-RecoilKickBack.y, RecoilKickBack.y), RecoilKickBack.z);
        }
    }
+   
 }
 

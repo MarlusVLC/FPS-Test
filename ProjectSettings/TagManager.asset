@@ -17,8 +17,8 @@ TagManager:
   - Collectable
   - Target
   - Interactable
-  - 
-  - 
+  - Player
+  - Head
   - 
   - 
   - 

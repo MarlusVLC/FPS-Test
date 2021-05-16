@@ -12,7 +12,7 @@ namespace Weapons
     [RequireComponent(typeof(AudioSource))]
     public abstract class Weapon : MonoBehaviour
     {
-        protected Camera _fpsCam;
+        // [SerializeField] protected Transform _head;
         protected Animator _anim;
         public AttackType AttackType { get; protected set; }
 
@@ -21,11 +21,7 @@ namespace Weapons
         {
             _anim = GetComponent<Animator>();
         }
-
-        protected virtual void Start()
-        {
-            _fpsCam = Camera.main;
-        }
+        
         
 
         
@@ -42,7 +38,7 @@ namespace Weapons
 
         public abstract bool CanExecSpecialAction0();
 
-        public abstract void Attack(bool inputReceived, bool changingCondition = false);
+        public abstract void Attack(Transform eyeOrigin, bool inputReceived, bool changingCondition = false);
 
         public abstract void ExecSpecialAction0();
     }

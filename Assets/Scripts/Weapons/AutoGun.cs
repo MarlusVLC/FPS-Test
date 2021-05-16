@@ -1,11 +1,12 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using Players;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
 namespace Weapons
 {
-    [RequireComponent(typeof(RecoilEffector))]
+    // [RequireComponent(typeof(RecoilEffector))]
     [RequireComponent(typeof(AudioSource))]
     public class AutoGun : Gun
     {
@@ -39,15 +40,15 @@ namespace Weapons
             AttackType = AttackType.AutoFire;
             _currSpreadFactor = _initialSpreadFactor;
         }
-        
-        
-        
-
-        
 
 
 
-        protected override void Fire(bool inputReceived, bool isAiming)
+
+
+
+
+
+        protected override void Fire(Transform aimOrigin, bool inputReceived, bool isAiming)
         {
             if (inputReceived)
             {
@@ -61,10 +62,13 @@ namespace Weapons
                     _currSpreadFactor += _progressiveSpreadingFactor;
                     _currSpreadFactor = Mathf.Clamp(_currSpreadFactor, _initialSpreadFactor, _maximumSpreadFactor);
 
-                    _recoil.AddRecoil(isAiming);
+                    if (_recoil)
+                    {
+                        _recoil.AddRecoil(isAiming);
+                    }
                     _audio.PlayOneShot(fireSound);
-
-                    Shoot();
+  
+                    Shoot(aimOrigin);
                 }
                 return;
             }
@@ -72,14 +76,14 @@ namespace Weapons
             ResetSpreadFactor();
         }
 
-        void Shoot()
+        void Shoot(Transform shotOrigin)
         {
             muzzleFlash.Play();
 
             _currAmmo--;
 
             RaycastHit hit;
-            if (Physics.Raycast(_fpsCam.transform.position, SpreadBulletDirection(_currSpreadFactor), out hit, range,
+            if (Physics.Raycast(shotOrigin.position, SpreadProjectileDirection(shotOrigin, _currSpreadFactor), out hit, range,
                 ~unShootable))
             {
                 BulletImpact(hit);

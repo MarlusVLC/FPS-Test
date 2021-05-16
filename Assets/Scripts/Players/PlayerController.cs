@@ -12,6 +12,10 @@ namespace Players
         [SerializeField] private GrenadeThrower _grenadeThrower;
         [SerializeField] private AnimationHandler _animHandler;
         [SerializeField] private FirstPersonMovement _movement;
+        [Space(11)]
+        [SerializeField] private Transform _head;
+        [SerializeField] private Transform _recoilRotation;
+        [SerializeField] private Transform _recoilPosition;
 
         private int _weaponKey;
         private bool _isAiming;
@@ -62,14 +66,14 @@ namespace Players
                     if (_weaponHandler.CurrWeapon.CanAttack())
                     {
                         _animHandler.SetFire(Input.GetButton("Fire1")); 
-                        _weaponHandler.CurrWeapon.Attack(Input.GetButton("Fire1"), _isAiming);
+                        _weaponHandler.CurrWeapon.Attack(_head, Input.GetButton("Fire1"), _isAiming);
                     }
                     break;
                 case AttackType.PumpFire:
                     if (_weaponHandler.CurrWeapon.CanAttack())
                     {
                         _animHandler.SetFire(Input.GetButtonDown("Fire1")); 
-                        _weaponHandler.CurrWeapon.Attack(Input.GetButtonDown("Fire1"), _isAiming);
+                        _weaponHandler.CurrWeapon.Attack(_head, Input.GetButtonDown("Fire1"), _isAiming);
                     }
                     break;
             }
