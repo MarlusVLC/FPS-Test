@@ -47,7 +47,7 @@ namespace Weapons
                     if (Physics.Raycast(aimOrigin.position, SpreadProjectileDirection(aimOrigin, spreadRadius), out hit, range,
                         ~unShootable))
                     {
-                        BulletImpact(hit);
+                        BulletImpact(hit, true);
                     }
                 }
 

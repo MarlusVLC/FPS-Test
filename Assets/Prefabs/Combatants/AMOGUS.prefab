@@ -160,6 +160,7 @@ GameObject:
   - component: {fileID: 6179584840576899762}
   - component: {fileID: 6179584840576899760}
   - component: {fileID: 5068615392331562816}
+  - component: {fileID: 3628546977572933906}
   m_Layer: 8
   m_Name: AMOGUS
   m_TagString: Untagged
@@ -290,7 +291,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6179584840576899771}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6fd293e2a8b24c2db24d19df5fb06e89, type: 3}
   m_Name: 
@@ -317,6 +318,29 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: 20
+--- !u!114 &3628546977572933906
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6179584840576899771}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 905fbb1a780d4499859702fd70899438, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  showCircumference: 0
+  pretendedTargets: 1
+  checkInterval: 1
+  viewAngle: 30
+  viewRadius: 44.01
+  targetMask:
+    serializedVersion: 2
+    m_Bits: 1024
+  obstacleMask:
+    serializedVersion: 2
+    m_Bits: 4160
 --- !u!1 &6179584840700617647
 GameObject:
   m_ObjectHideFlags: 0

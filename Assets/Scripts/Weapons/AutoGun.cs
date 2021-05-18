@@ -67,7 +67,8 @@ namespace Weapons
                         _recoil.AddRecoil(isAiming);
                     }
                     _audio.PlayOneShot(fireSound);
-  
+
+                    OnAttackExecution();
                     Shoot(aimOrigin);
                 }
                 return;

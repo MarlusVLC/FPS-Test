@@ -52,10 +52,14 @@ namespace Weapons
         protected virtual void OnEnable()
         {
             SetPreviousAmmo();
-            OnAmmoChanged(_currAmmo, _ammoReserve.GetAmmo(ammoType));
             _isReloadin = false;
         }
-        
+
+        protected virtual void Start()
+        {
+            OnAmmoChanged(_currAmmo, _ammoReserve.GetAmmo(ammoType));
+        }
+
         protected virtual void Update()
         {
             if (HasAmmoChanged())
@@ -64,7 +68,7 @@ namespace Weapons
                 SetPreviousAmmo();
             }
             
-            if (IsOutOfAmmo())
+            if (IsOutOfAmmo() && CanReload())
             {
                 StartCoroutine(Reload());
             }
@@ -108,18 +112,20 @@ namespace Weapons
         {
             AmmoChanged?.Invoke(currAmmo, reserveAmmo);
         }
+
+
         
         private bool IsOutOfAmmo()
         {
             return _currAmmo <= 0f && !_isReloadin;
         }
         
-        protected void BulletImpact(RaycastHit hitObject)
+        protected void BulletImpact(RaycastHit hitObject, bool considerDistance = false)
         {
             Target target = hitObject.transform.GetComponent<Target>();
             if (target)
             {
-                target.TakeDamage(damage);
+                target.TakeDamage(considerDistance ? DamageOnDistance(hitObject) : damage);
             }
 
             if (hitObject.rigidbody)
@@ -145,9 +151,12 @@ namespace Weapons
 
             return shootDirection;
         }
-        
-        
-        
+
+
+        protected float DamageOnDistance(RaycastHit hit)
+        {
+            return damage / hit.distance * 10f;
+        }
         
         public override bool CanAttack()
         {

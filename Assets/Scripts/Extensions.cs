@@ -17,5 +17,12 @@ namespace DefaultNamespace
             transform.rotation = Quaternion.LookRotation(Vector3.RotateTowards(transform.forward, targetPos - transform.position,
                 speed * Time.deltaTime, 0.0f));
         }
+
+        public static void UncannyVector (this Vector3 vector)
+        {
+            vector.x = 9999;
+            vector.y = 9999;
+            vector.z = 9999;
+        }
     }
 }

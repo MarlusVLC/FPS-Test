@@ -36,20 +36,28 @@ namespace DefaultNamespace.AI
 
         private void Update()
         {
+            //Se a quantidade de coisas dentro da esfera for maior que 0
+            //e essas coisas fizerem parte da Layer LM_target:
             if (Physics.OverlapSphereNonAlloc(transform.position, outerRadius, _possibleTargets, LM_target) > 0)
             {
+                //Pega a posica do jogador
                 _targetPosition = _possibleTargets[0].transform.position;
                 
                 //O inimigo rotaciona em direção ao alvo caso ele esteja dentro do raio maior
                 transform.RotateTowards(_targetPosition, staticTurnSpeed);
                 
+                //Se essa coisa estiver dentro da esfera menor, atira
                 if (Physics.OverlapSphereNonAlloc(transform.position, innerRadius, _possibleTargets, LM_target) > 0)
                 {
                     gun.Attack(head, true);
                 }
+                
+                //Se houver algo no círculo externo, o Update acaba aqui
                 return;
             }
-
+            
+            
+            //Checa se há algo em _possibleTargets e se a IA não tem um caminho formado.
             if (_possibleTargets[0] && !_navMeshAgent.hasPath)
             {
                 _navMeshAgent.SetDestination(_targetPosition);

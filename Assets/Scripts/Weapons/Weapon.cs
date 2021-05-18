@@ -16,6 +16,7 @@ namespace Weapons
         protected Animator _anim;
         public AttackType AttackType { get; protected set; }
 
+        public event Action AttackExecuted;
 
         protected virtual void Awake()
         {
@@ -25,7 +26,10 @@ namespace Weapons
         
 
         
-        
+        protected void OnAttackExecution()
+        {
+            AttackExecuted?.Invoke();
+        }
         
         
         public Animator Anim

@@ -17,7 +17,7 @@ namespace UI
             statusUI = GetComponent<TextMeshProUGUI>();
         }
         
-        private void OnEnable()
+        private void Start()
         {
             // Gun.AmmoChanged += UpdateText;
 
