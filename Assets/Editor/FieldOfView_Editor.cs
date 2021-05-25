@@ -2,46 +2,56 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using AI;
-using TESTES;
 using UnityEditor;
 using UnityEngine;
 
-namespace DefaultNamespace.AI
+[CustomEditor(typeof(FieldOfView))]
+public class FieldOfView_Editor : Editor
 {
+    private Vector3 _objectPos;
+    private FieldOfView fow;
     
-    //Fonte: Sebastian Lague
-    [CustomEditor(typeof(FieldOfView))]
-    public class FieldOfView_Editor : Editor
+    
+    private void OnSceneGUI()
     {
-        private Vector3 _objectPos;
-        private void OnSceneGUI()
+        fow = (FieldOfView) target;
+        Handles.color = Color.white;
+        Vector3 viewAngleA = fow.DirFromAngle(-fow.ViewAngle/2, false);
+        Vector3 viewAngleB = fow.DirFromAngle(fow.ViewAngle / 2, false);
+        
+        if (fow.ShowCircumference)
         {
-            FieldOfView fow = (FieldOfView) target;
-            Handles.color = Color.white;
-            Vector3 viewAngleA = fow.DirFromAngle(-fow.ViewAngle/2, false);
-            Vector3 viewAngleB = fow.DirFromAngle(fow.ViewAngle / 2, false);
-        
-            if (fow.ShowCircumference)
-            {
-                Handles.DrawWireArc(fow.transform.position, Vector3.up, Vector3.forward, 360, fow.ViewRadius);
-            }
-            else
-            {
-                Handles.DrawWireArc(fow.transform.position, Vector3.up, viewAngleA, fow.ViewAngle, fow.ViewRadius);
-            }
+            Handles.DrawWireArc(fow.transform.position, Vector3.up, Vector3.forward, 360, fow.ViewRadius);
+        }
+        else
+        {
+            Handles.DrawWireArc(fow.transform.position, Vector3.up, viewAngleA, fow.ViewAngle, fow.ViewRadius);
+        }
 
-            _objectPos = fow.transform.position;
-            Handles.DrawLine(_objectPos, _objectPos + viewAngleA * fow.ViewRadius);
-            Handles.DrawLine(_objectPos, _objectPos + viewAngleB * fow.ViewRadius);
+        _objectPos = fow.transform.position;
+        Handles.DrawLine(_objectPos, _objectPos + viewAngleA * fow.ViewRadius);
+        Handles.DrawLine(_objectPos, _objectPos + viewAngleB * fow.ViewRadius);
 
         
         
-            Handles.color = Color.red;
-            foreach (Transform visibleTarget in fow.VisibleTargets)
-            {
-                Handles.DrawLine(fow.transform.position, visibleTarget.transform.position);
-            }
+        Handles.color = Color.red;
+        foreach (Transform visibleTarget in fow.VisibleTargets)
+        {
+            Handles.DrawLine(fow.transform.position, visibleTarget.transform.position);
+        }
+    }
+
+    public override void OnInspectorGUI()
+    {
+        base.OnInspectorGUI();
+        fow = (FieldOfView) target;
+        if (GUILayout.Button("Initialize lists"))
+        {
+            fow.InitializeLists();
+        }
+        if (GUILayout.Button("Get Visible Targets"))
+        {
+            fow.FindVisibleTargets();
         }
     }
 }
-

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.AI;
 
 namespace DefaultNamespace
@@ -12,11 +13,21 @@ namespace DefaultNamespace
                     (!_navMeshAgent.hasPath || _navMeshAgent.velocity.sqrMagnitude == 0f);
         }
         
+        public static bool HasReachedDestination(this NavMeshAgent _navMeshAgent, Vector3 position, Vector3 destination)
+        {
+            return !_navMeshAgent.pathPending && _navMeshAgent.remainingDistance <= _navMeshAgent.stoppingDistance &&
+                   (!_navMeshAgent.hasPath || _navMeshAgent.velocity.sqrMagnitude == 0f) &&
+                   // (Vector3.Distance(position,destination) < 2f);
+                   Vector3.SqrMagnitude(destination - position) < 2f * 2f;
+        }
+        
         public static void RotateTowards(this Transform transform, Vector3 targetPos, float speed)
         {
             transform.rotation = Quaternion.LookRotation(Vector3.RotateTowards(transform.forward, targetPos - transform.position,
                 speed * Time.deltaTime, 0.0f));
         }
+        
+        
 
         public static void UncannyVector (this Vector3 vector)
         {

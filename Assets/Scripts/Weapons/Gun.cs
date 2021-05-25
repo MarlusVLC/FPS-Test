@@ -51,6 +51,7 @@ namespace Weapons
         
         protected virtual void OnEnable()
         {
+            OnAmmoChanged(_currAmmo, _ammoReserve.GetAmmo(ammoType));
             SetPreviousAmmo();
             _isReloadin = false;
         }

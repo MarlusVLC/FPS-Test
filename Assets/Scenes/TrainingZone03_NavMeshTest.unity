@@ -5498,6 +5498,10 @@ PrefabInstance:
       propertyPath: viewAngle
       value: 75
       objectReference: {fileID: 0}
+    - target: {fileID: 3628546977572933906, guid: 26de663ec2b49cb46a8b2e32fcafdb0e, type: 3}
+      propertyPath: numberOfExpectedTargets
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4442424834790260728, guid: 26de663ec2b49cb46a8b2e32fcafdb0e, type: 3}
       propertyPath: m_IsActive
       value: 1
@@ -5624,8 +5628,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   showCircumference: 0
-  pretendedTargets: 1
-  checkInterval: 0
+  numberOfExpectedTargets: 1
+  checkInterval: 0.2
   viewAngle: 75
   viewRadius: 8.51
   targetMask:

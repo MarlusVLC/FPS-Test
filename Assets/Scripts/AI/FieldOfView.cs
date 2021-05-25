@@ -9,7 +9,7 @@ namespace AI
     public class FieldOfView : MonoBehaviour
     {
         [SerializeField] private bool showCircumference;
-        [SerializeField] private int pretendedTargets;
+        [SerializeField] private int numberOfExpectedTargets;
         [SerializeField] private float checkInterval;
         [Range(0,360)] [SerializeField] private float viewAngle;
         [SerializeField] float viewRadius; 
@@ -17,12 +17,17 @@ namespace AI
         [SerializeField] private LayerMask obstacleMask;
     
         private Collider[] _targetsInViewRadius;
-        private List<Transform> visibleTargets = new List<Transform>();
+        public List<Transform> VisibleTargets { get; private set; }
+
+        
+        private int _numberOfTargetsInRadius;
 
 
         void Start()
         {
-            _targetsInViewRadius = new Collider[pretendedTargets];
+            _targetsInViewRadius = new Collider[numberOfExpectedTargets];
+            VisibleTargets = new List<Transform>(numberOfExpectedTargets);
+
             StartCoroutine(FindTargetsWithDelay(checkInterval));
         }
         
@@ -30,7 +35,7 @@ namespace AI
         {
             if (Application.isPlaying)
             {
-                _targetsInViewRadius = new Collider[pretendedTargets];
+                _targetsInViewRadius = new Collider[numberOfExpectedTargets];
                 StartCoroutine(FindTargetsWithDelay(checkInterval));
             }
         }
@@ -46,14 +51,15 @@ namespace AI
             }
         }
 
-        private void FindVisibleTargets()
+        public void FindVisibleTargets()
         {
-            visibleTargets.Clear();
+            VisibleTargets.Clear();
 
-            if (Physics.OverlapSphereNonAlloc(transform.position, viewRadius, _targetsInViewRadius, targetMask) <=
-                0) return;
+            _numberOfTargetsInRadius =
+                Physics.OverlapSphereNonAlloc(transform.position, viewRadius, _targetsInViewRadius, targetMask);
             
-            for (int i = 0; i < _targetsInViewRadius.Length; i++)
+            
+            for (int i = 0; i < _numberOfTargetsInRadius; i++)
             {
                 Transform target = _targetsInViewRadius[i].transform;
                 Vector3 dirToTarget = (target.position - transform.position).normalized;
@@ -63,7 +69,7 @@ namespace AI
 
                     if (!Physics.Raycast(transform.position, dirToTarget, distToTarget, obstacleMask))
                     {
-                        visibleTargets.Add(target);
+                        VisibleTargets.Add(target);
                     }
                 }
             }
@@ -84,9 +90,15 @@ namespace AI
         
         public float ViewAngle => viewAngle;
         public float ViewRadius => viewRadius;
-        public List<Transform> VisibleTargets => visibleTargets;
+        // public List<Transform> VisibleTargets => VisibleTargets;
 
         public bool ShowCircumference => showCircumference;
+
+        public void InitializeLists()
+        {
+            _targetsInViewRadius = new Collider[numberOfExpectedTargets];
+            VisibleTargets = new List<Transform>(numberOfExpectedTargets);
+        }
     }  
 }
 
