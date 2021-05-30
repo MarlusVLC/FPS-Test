@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using DefaultNamespace;
 using UnityEngine;
 using UnityEngine.Serialization;
+using Weapons;
 
 public class Grenade : MonoBehaviour
 {

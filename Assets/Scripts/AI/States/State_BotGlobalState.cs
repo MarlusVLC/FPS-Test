@@ -11,16 +11,16 @@ namespace AI.States
 
         public override void Execute()
         {
-            if (_entity.OuterFow.VisibleTargets.Count > 0 && _stateMachine.CurrentState != _gaze &&
-                _stateMachine.CurrentState != _attack && _stateMachine.CurrentState != _pursuit)
+            if (_entity.OuterFow.VisibleTargets.Count > 0 && _entity.MyStateMachine.CurrentState != _entity.Gaze &&
+                _entity.MyStateMachine.CurrentState != _entity.Attack && _entity.MyStateMachine.CurrentState != _entity.Pursuit)
             {
-                _gaze.TargetPosition = _entity.OuterFow.VisibleTargets[0].position;
-                _stateMachine.ChangeState(_gaze);
+                _entity.TargetPosition = _entity.OuterFow.VisibleTargets[0].position;
+                _entity.MyStateMachine.ChangeState(_entity.Gaze);
             }
 
-            if (_entity.InnerFow.VisibleTargets.Count > 0)
+            if (_entity.InnerFow.VisibleTargets.Count > 0 && _entity.MyStateMachine.CurrentState != _entity.Attack)
             {
-                _stateMachine.ChangeState(_attack);
+                _entity.MyStateMachine.ChangeState(_entity.Attack);
             }
         }
 

@@ -30,6 +30,7 @@ namespace Weapons
         private int _PREVcurrAmmo;
         private int _PREVreserveAmmo;
         protected bool _isReloadin;
+        protected bool _isSilenced;
         protected AmmoReserve _ammoReserve;
         protected AudioSource _audio;
         protected RecoilEffector _recoil;
@@ -152,11 +153,32 @@ namespace Weapons
 
             return shootDirection;
         }
+        
 
 
         protected float DamageOnDistance(RaycastHit hit)
         {
             return damage / hit.distance * 10f;
+        }
+
+        protected void ToggleSilencer()
+        {
+            if (!_isSilenced)
+            {
+                print("arma silenciada");
+                _audio.volume *= 0.1f;
+                _audio.pitch += 0.5f;
+                audioIntensity *= 0.1f;
+                _isSilenced = true;
+            }
+            else
+            {
+                print("volume total");
+                _audio.volume /= 0.1f;
+                _audio.pitch -= 0.5f;
+                audioIntensity /= 0.1f;
+                _isSilenced = false;
+            }
         }
         
         public override bool CanAttack()
@@ -178,5 +200,11 @@ namespace Weapons
         {
             StartCoroutine(Reload());
         }
+
+        public override void ToggleSpecialCondition0()
+        {
+            ToggleSilencer();
+        }
+
     }
 }

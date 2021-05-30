@@ -5,11 +5,10 @@ namespace AI.States
 {
     public class State_Gaze : State
     {
-        private Vector3? _targetPosition;
         
         public override void Enter()
         {
-            _entity.AlertLevel = 1;
+            // _entity.AlertLevel = 1;
         }
         
 
@@ -18,32 +17,23 @@ namespace AI.States
 
             if (_entity.InnerFow.VisibleTargets.Count > 0)
             {
-                _stateMachine.ChangeState(_attack);
+                _entity.MyStateMachine.ChangeState(_entity.Attack);
                 return;
             }
 
             if (_entity.OuterFow.VisibleTargets.Count > 0)
             {
-                _targetPosition = _entity.OuterFow.VisibleTargets[0].position;
-                Transform.RotateTowards(_targetPosition.Value, _entity.StaticTurnSpeed);
+                _entity.TargetPosition = _entity.OuterFow.VisibleTargets[0].position;
+                Transform.RotateTowards(_entity.TargetPosition.Value, _entity.StaticTurnSpeed);
             }
             else
             {
-                _pursuit.TargetPosition = _targetPosition.Value;
-                _targetPosition = null;
-                _stateMachine.ChangeState(_pursuit);
-                return;
+                _entity.MyStateMachine.ChangeState(_entity.Pursuit);
             }
         }
 
         public override void Exit()
         {
-        }
-        
-        public Vector3? TargetPosition
-        {
-            get => _targetPosition;
-            set => _targetPosition = value;
         }
     }
 }

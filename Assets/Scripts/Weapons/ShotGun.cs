@@ -52,6 +52,7 @@ namespace Weapons
                 }
 
                 StartCoroutine(Pump());
+                EmitSound(audioIntensity, transform.position);
             }
         }
 

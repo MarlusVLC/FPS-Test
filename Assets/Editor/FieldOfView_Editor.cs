@@ -40,7 +40,7 @@ public class FieldOfView_Editor : Editor
             Handles.DrawLine(fow.transform.position, visibleTarget.transform.position);
         }
     }
-
+    
     public override void OnInspectorGUI()
     {
         base.OnInspectorGUI();

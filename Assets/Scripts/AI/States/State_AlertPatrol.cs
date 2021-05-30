@@ -8,28 +8,23 @@ using UnityEngine;
 using UnityEngine.AI;
 using Random = UnityEngine.Random;
 
-namespace AI
+namespace AI.States
 {
     [RequireComponent(typeof(NavMeshAgent))]
-    public class State_Patrol : State
+    public class State_AlertPatrol : State
     {
 
         public override void Enter()
         {
-            
-            if (!_entity.HasARoute(_entity.NormalRoute))
-            {
-                if (_entity.AlertLevel > 0)
+                if (!_entity.HasARoute(_entity.AlertRoute))
                 {
-                    _entity.AlertLevel = 0;
+                    _entity.BuildNewRoute(_entity.GetAllNearbyWaypoints(), ref _entity.alertRoute);
                 }
-                _entity.BuildNewRoute(_entity.Waypoints, ref _entity.normalRoute);
-            }
         }
 
         public override void Execute()
         {
-            _entity.TraverseRoute(_entity.NormalRoute);
+            _entity.TraverseRoute(_entity.AlertRoute);
         }
 
         public override void Exit()

@@ -19,13 +19,14 @@ namespace AI
 
         public void ChangeState(State newState)
         {
+
             if (_currentState)
             {
                 _previousState = _currentState;
                 _currentState.Exit();
             }
             _currentState = newState;
-
+            
             _currentState.Enter();
         }
 

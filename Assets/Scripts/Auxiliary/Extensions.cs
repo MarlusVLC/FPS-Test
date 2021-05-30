@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -28,12 +29,28 @@ namespace DefaultNamespace
         }
         
         
-
-        public static void UncannyVector (this Vector3 vector)
+        public static IEnumerator tempModText(this TextMesh textMesh, Color color, string text, float timer)
         {
-            vector.x = 9999;
-            vector.y = 9999;
-            vector.z = 9999;
+            var defaultColor = textMesh.color;
+            var defaultText = textMesh.text;
+
+            textMesh.color = color;
+            textMesh.text = text;
+
+            yield return new WaitForSeconds(timer);
+
+            textMesh.color = defaultColor;
+            textMesh.text = defaultText;
+        }
+
+        public static short KeepNatural(this short num)
+        {
+            if (num < 0)
+            {
+                num = 0;
+            }
+
+            return num;
         }
     }
 }

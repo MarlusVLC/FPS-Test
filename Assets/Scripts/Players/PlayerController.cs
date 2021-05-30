@@ -21,19 +21,28 @@ namespace Players
         private bool _isAiming;
         private Weapon _currWeapon;
 
+        private void Start()
+        {
+            Cursor.lockState = CursorLockMode.Confined;
+        }
 
         private void Update()
         {
-            SetMovementDirection();
-            _isAiming = Input.GetMouseButton(1);
-            SetJump();
-            SetCrouch();
-            SetSprint();
-            ChangeWeapons();
-            SetAim();
-            TryFire();
-            TryThrowGrenade();
-            TriggerReload();
+            if (Cursor.lockState == CursorLockMode.Locked)
+            {
+                SetMovementDirection();
+                _isAiming = Input.GetMouseButton(1);
+                SetJump();
+                SetCrouch();
+                SetSprint();
+                ChangeWeapons();
+                SetAim();
+                TryFire();
+                TryThrowGrenade();
+                TriggerReload();
+                ToggleSilencing();
+            }
+
         }
 
 
@@ -83,6 +92,14 @@ namespace Players
         private void SetAim()
         {
             _animHandler.SetAim(_isAiming);
+        }
+
+        private void ToggleSilencing()
+        {
+            if (Input.GetKeyDown(KeyCode.M))
+            {
+                _weaponHandler.CurrWeapon.ToggleSpecialCondition0();
+            }
         }
 
         private void TriggerReload()

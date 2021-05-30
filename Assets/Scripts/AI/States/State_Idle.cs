@@ -8,31 +8,33 @@ namespace AI.States
         [SerializeField] private float minTime;
         [SerializeField] private float maxTime;
 
-        private bool _hasWaitedEnough;
         public override void Enter()
         {
-            StartCoroutine(Wait(minTime, maxTime));
+            StartCoroutine(_entity.Wait(_entity.WaitTime));
         }
 
         public override void Execute()
         {
-            if (_hasWaitedEnough)
+            if (_entity.HasWaitedEnough)
             {
-                _stateMachine.ChangeState(_patrol);
+                if (_entity.AlertLevel > 1)
+                {
+                    _entity.MyStateMachine.ChangeState(_entity.AlertPatrol);
+                }
+                else
+                {
+                    _entity.MyStateMachine.ChangeState(_entity.Patrol);
+                }
             }
         }
 
         public override void Exit()
         {
+            StopCoroutine(_entity.Wait(_entity.WaitTime));
+            _entity.WaitTime = Random.Range(_entity.MINWaitingTime, _entity.MAXWaitingTime);
 
         }
 
-        private IEnumerator Wait(float minTime, float maxTime)
-        {
-            _hasWaitedEnough = false;
-            var timeToWait = Random.Range(minTime, maxTime);
-            yield return new WaitForSeconds(timeToWait);
-            _hasWaitedEnough = true;
-        }
+
     }
 }
