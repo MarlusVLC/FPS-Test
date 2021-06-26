@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using Weapons;
 
 namespace Players
@@ -11,6 +12,7 @@ namespace Players
         
         private AnimationHandler AnimHandler;
         private int _selectedWeapon;
+
 
         
         

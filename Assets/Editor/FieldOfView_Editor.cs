@@ -45,12 +45,12 @@ public class FieldOfView_Editor : Editor
     {
         base.OnInspectorGUI();
         fow = (FieldOfView) target;
-        if (GUILayout.Button("Initialize lists"))
-        {
-            fow.InitializeLists();
-        }
+        // if (GUILayout.Button("Initialize lists"))
+        // {
+        // }
         if (GUILayout.Button("Get Visible Targets"))
         {
+            fow.InitializeLists();
             fow.FindVisibleTargets();
         }
     }

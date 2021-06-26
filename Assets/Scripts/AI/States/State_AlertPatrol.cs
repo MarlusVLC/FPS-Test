@@ -14,11 +14,13 @@ namespace AI.States
     public class State_AlertPatrol : State
     {
 
+        
         public override void Enter()
         {
                 if (!_entity.HasARoute(_entity.AlertRoute))
                 {
                     _entity.BuildNewRoute(_entity.GetAllNearbyWaypoints(), ref _entity.alertRoute);
+                    _entity.WaitTime = 0f;
                 }
         }
 

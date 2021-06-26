@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using AI.States;
 using DefaultNamespace;
 using Entities;
@@ -12,7 +14,7 @@ namespace Weapons
 {
     [RequireComponent(typeof(Animator))]
     [RequireComponent(typeof(AudioSource))]
-    public abstract class Weapon : MonoBehaviour, ISoundEmitter
+    public abstract class Weapon : MonoCache, ISoundEmitter
     {
 
         // [SerializeField] protected Transform _head;
@@ -27,30 +29,22 @@ namespace Weapons
         protected Animator _anim;
         protected Collider[] _listeners;
         protected float _audioMaxDist;
+        protected float _audioAlertDist;
         
         
 
         protected virtual void Awake()
         {
             _anim = GetComponent<Animator>();
-            // _listeners = new Collider[10];
+            _listeners = new Collider[10];
         }
 
         protected void OnValidate()
         {
             _audioMaxDist = Mathf.Sqrt(audioIntensity / 0.1f);
+            _audioAlertDist = Mathf.Sqrt(audioIntensity / 1.2f);
         }
         
-        protected virtual void OnDrawGizmos()
-        {
-            if (DEBUGaudioDistance)
-            {
-                Gizmos.color = Color.green;
-                Gizmos.DrawWireSphere(transform.position, _audioMaxDist);
-            }
-        }
-
-
         protected void OnAttackExecution()
         {
             AttackExecuted?.Invoke();
@@ -60,29 +54,49 @@ namespace Weapons
         {
             // SoundEmitted?.Invoke(audioScale, sourcePosition);
         }
+        
+        
+        
+        
 
+        // protected void EmitSound(float intensity, Vector3 sourcePosition)
+        // {
+        //     var maxDistance = Mathf.Sqrt(audioIntensity / 0.1f);
+        //     _listeners = Physics.OverlapSphere(sourcePosition, maxDistance, listenersMask);
+        //     if (_listeners.Length > 0)
+        //     {
+        //         Array.ForEach(_listeners,sb => sb.GetComponent<SensorialBeing>()?.ProcessSound(intensity, sourcePosition));
+        //     }
+        // }
+        
         protected void EmitSound(float intensity, Vector3 sourcePosition)
         {
-            // _listeners = new Collider[10];
-            SensorialBeing sb;
-            float maxDistance = Mathf.Sqrt(audioIntensity / 0.1f);
-            _listeners = Physics.OverlapSphere(sourcePosition, maxDistance, listenersMask);
-            if (_listeners.Length > 0){
-            // if (Physics.OverlapSphereNonAlloc(sourcePosition, maxDistance, _listeners, listenersMask) > 0)
+            var maxDistance = Mathf.Sqrt(intensity / 0.1f);
+            var numberOfListeners =
+                Physics.OverlapSphereNonAlloc(sourcePosition, maxDistance, _listeners, listenersMask);
+ 
+            // Array.ForEach(_listeners.Take(numberOfListeners).ToArray(), ReceiveCollider);
+            
+            // foreach (var collider_ in _listeners.Take(numberOfListeners))
             // {
-                int i = 1;
-                foreach (Collider listener in _listeners)
-                {
-                    // print($"Quem escutou #{i}: {listener.gameObject.name} ");
-                    i++;
-                    sb = listener.GetComponent<SensorialBeing>();
-                    if (sb)
-                    {
-                        sb.ProcessSound(intensity, sourcePosition);
-                    }
-                }
+            //     collider_.GetComponent<SensorialBeing>()?.ProcessSound(intensity, sourcePosition);
+            // }
+
+            for (var i = 0; i < numberOfListeners; i++)
+            {
+                _listeners[i].GetComponent<SensorialBeing>()?.ProcessSound(intensity, sourcePosition);
             }
         }
+
+
+        protected void ReceiveCollider(Collider _collider)
+        {
+            
+        }
+        
+        
+        
+        
         
         
         public Animator Anim
@@ -102,5 +116,14 @@ namespace Weapons
         public abstract void ToggleSpecialCondition0();
 
 
+        protected virtual void OnDrawGizmos()
+        {
+            if (DEBUGaudioDistance)
+            {
+                Gizmos.color = Color.green;
+                Gizmos.DrawWireSphere(transform.position, _audioAlertDist);
+                Gizmos.DrawWireSphere(transform.position, _audioMaxDist);
+            }
+        }
     }
 }

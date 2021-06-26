@@ -7,16 +7,22 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Destructible : MonoBehaviour {
 
-	public GameObject destroyedVersion;	// Reference to the shattered version of the object
+	[SerializeField] private GameObject destroyedVersion;	// Reference to the shattered version of the object
+	[SerializeField] private bool resetScene;
+	
 	private bool _isDestroyed;
+	
 
 	// If the player clicks on the object
 	public void Die ()
 	{
-		if (!_isDestroyed)
+		if (resetScene)
+			SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+		if (!_isDestroyed && destroyedVersion)
 		{
 			// Spawn a shattered object
 			Instantiate(destroyedVersion, transform.position, transform.rotation);

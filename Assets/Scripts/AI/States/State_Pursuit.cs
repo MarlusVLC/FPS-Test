@@ -1,4 +1,5 @@
-﻿using DefaultNamespace;
+﻿using Auxiliary;
+using DefaultNamespace;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -9,6 +10,8 @@ namespace AI.States
     {
         public override void Enter()
         {
+            _entity.PaintWaypoints(_entity.alertRoute, true);
+            _entity.alertRoute.Clear();
             _entity.StartPositionPursuit(_entity.TargetPosition.Value);
         }
 

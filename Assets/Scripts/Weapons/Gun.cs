@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections;
 using System.Net;
+using Auxiliary;
+using Entities;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
 namespace Weapons
 {
-    public abstract class Gun : Weapon
+    public abstract class Gun : Weapon, LateStarter
     {
         [Header("Firing System")]
         [SerializeField] protected float damage = 10f;
@@ -15,6 +17,8 @@ namespace Weapons
         [SerializeField] protected float fireRate = 15f;
         [SerializeField] protected AudioClip fireSound;
         [SerializeField] protected LayerMask unShootable;
+        [SerializeField] protected bool _isSilenced;
+
         
         [Header("Reloading System")]
         [SerializeField] protected AmmoType ammoType;
@@ -30,7 +34,6 @@ namespace Weapons
         private int _PREVcurrAmmo;
         private int _PREVreserveAmmo;
         protected bool _isReloadin;
-        protected bool _isSilenced;
         protected AmmoReserve _ammoReserve;
         protected AudioSource _audio;
         protected RecoilEffector _recoil;
@@ -52,14 +55,21 @@ namespace Weapons
         
         protected virtual void OnEnable()
         {
-            OnAmmoChanged(_currAmmo, _ammoReserve.GetAmmo(ammoType));
+            // OnAmmoChanged(_currAmmo, _ammoReserve.GetAmmo(ammoType));
             SetPreviousAmmo();
             _isReloadin = false;
         }
 
         protected virtual void Start()
         {
+            StartCoroutine(LateStart(0.1f));
+        }
+        
+        public IEnumerator LateStart(float waitTime)
+        {
+            yield return new WaitForSeconds(waitTime);
             OnAmmoChanged(_currAmmo, _ammoReserve.GetAmmo(ammoType));
+
         }
 
         protected virtual void Update()
@@ -124,10 +134,10 @@ namespace Weapons
         
         protected void BulletImpact(RaycastHit hitObject, bool considerDistance = false)
         {
-            Target target = hitObject.transform.GetComponent<Target>();
-            if (target)
+            Health health = hitObject.transform.GetComponent<Health>();
+            if (health)
             {
-                target.TakeDamage(considerDistance ? DamageOnDistance(hitObject) : damage);
+                health.TakeDamage(considerDistance ? DamageOnDistance(hitObject) : damage);
             }
 
             if (hitObject.rigidbody)
@@ -153,7 +163,7 @@ namespace Weapons
 
             return shootDirection;
         }
-        
+
 
 
         protected float DamageOnDistance(RaycastHit hit)
@@ -161,6 +171,12 @@ namespace Weapons
             return damage / hit.distance * 10f;
         }
 
+        
+        
+        
+        
+        
+            
         protected void ToggleSilencer()
         {
             if (!_isSilenced)
@@ -179,7 +195,14 @@ namespace Weapons
                 audioIntensity /= 0.1f;
                 _isSilenced = false;
             }
+            _audioMaxDist = Mathf.Sqrt(audioIntensity / 0.1f);
+            _audioAlertDist = Mathf.Sqrt(audioIntensity / 1.2f);
         }
+        
+        
+        
+        
+        
         
         public override bool CanAttack()
         {
@@ -205,6 +228,9 @@ namespace Weapons
         {
             ToggleSilencer();
         }
+
+
+
 
     }
 }

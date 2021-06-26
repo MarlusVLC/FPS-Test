@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using AI.States;
 using Auxiliary;
 using DefaultNamespace;
-using Entities;
 using UnityEngine;
 using UnityEngine.AI;
 using Weapons;
@@ -55,14 +55,12 @@ namespace AI
         [SerializeField]private TextMesh alertText;
         [SerializeField] private float alertRadius = 27f;
         [SerializeField] private LayerMask alarmMask;
-        [SerializeField] private float alarmingSound = 1.2f;
+        [SerializeField] private float alarmingSoundThreshold = 1.2f;
 
         [Space(11)] [Header("Audio")]
         [SerializeField] private AudioClip alert0SFX;
         [SerializeField] private AudioClip alert1SFX;
         [SerializeField] private AudioClip alert2SFX;
-        
-        
         
 
         #region External Tools
@@ -85,8 +83,8 @@ namespace AI
         private Vector3? _targetPosition;
         private Vector3 _initialPosition;
         private Material _material;
-        private Int16 _alertLevel;
-        private Int16 _previousAlertLevel;
+        private short _alertLevel;
+        private short _previousAlertLevel;
         private float _waitTime;
         private bool _hasWaitedEnough;
         private int _attacksExecuted;
@@ -210,9 +208,8 @@ namespace AI
         #endregion
 
         #region PATROL
-        public void BuildNewRoute(List<Waypoint> knownWaypoints, ref List<Waypoint> route)
+        public void BuildNewRoute(List<Waypoint> knownWaypoints, ref List<Waypoint> route) //SetRoute da Eloisa
         {
-            
             //TODO estudar:
             //TODO Queue
             //TODO Dictionary
@@ -220,8 +217,7 @@ namespace AI
             //TODO Value types e reference types
             //TODO LINQ 
             //TODO Regras de Negocio e Regras de Enterprise 
-            
-            
+
             HashSet<int> indexes =
                 MathTools.GenerateDistinctNumbersWithinRange(0, knownWaypoints.Count,  Random.Range(1, knownWaypoints.Count));
             route = knownWaypoints.Where(waypoint => indexes.Contains(knownWaypoints.IndexOf(waypoint))
@@ -231,8 +227,18 @@ namespace AI
         }
 
 
-        public void PaintWaypoints(List<Waypoint> route)
+        public void PaintWaypoints(List<Waypoint> route, bool forceDefault = false)
         {
+            if (forceDefault)
+            {
+                foreach (var waypoint in route)
+                {
+                    waypoint.CurrentColor = waypoint.DefaultColor;
+                }
+
+                return;
+            }
+            
             if (route == normalRoute)
             {
                 foreach (var waypoint in route)
@@ -270,37 +276,47 @@ namespace AI
         public void TraverseRoute(List<Waypoint> route)
         {
             if (route.Count <= 0)
-            {
+            {   
                 throw new InvalidOperationException("There must waypoints in this route");
             }
-        
             if (_navMeshAgent.destination != route[0].Transform.position)
             {
                 _navMeshAgent.SetDestination(route[0].Transform.position);
             }
-
-        
             if (_navMeshAgent.HasReachedDestination(Transform.position, route[0].Transform.position))
             {
-                
                 if (route.Count == 1)
                 {
                     _alertLevel--;
+                    WaitTime = Random.Range(MINWaitingTime, MAXWaitingTime);
                     _alertLevel.KeepNatural();
                 }
-
                 route[0].CurrentColor = route[0].DefaultColor;
                 route.RemoveAt(0);
-                
-                
                 MyStateMachine.ChangeState(_idle);
             }
         }
-        
-
         #endregion
-
-
+        
+        private bool IsInReactiveState()
+        {
+            return StateMachine.CurrentState == _attack || StateMachine.CurrentState == _pursuit;
+        }
+        
+        private void SetAlertLevelBasedOnFloat(float testingValue, float threshold)
+        {
+            //TODO Encapsular em outra funcao
+            if (testingValue >= threshold)
+            {
+                _alertLevel = 2;
+                _waitTime = 2f;
+            }
+            else if (_alertLevel == 0)
+            {
+                _alertLevel = 1;
+                _waitTime = 0f;
+            }
+        }
 
         private bool HasAlertLevelChanged()
         {
@@ -329,7 +345,7 @@ namespace AI
                 case 1:
                     _material.color = Color.yellow;
                     _audioSource.PlayOneShot(alert1SFX);
-                    StartCoroutine(alertText.tempModText(new Color(1f, 0.4f, 0f), "!", 1));
+                    StartCoroutine(alertText.tempModText(new Color(1f, 0.4f, 0f), "?", 1));
                     break;
                 case 2:
                     _material.color = Color.red;
@@ -339,97 +355,63 @@ namespace AI
                     break;
             }
         }
-
-
-
-        // public List<Waypoint> GetAllNearbyWaypoints()
-        // {
-        //     if (Physics.OverlapSphereNonAlloc(Transform.position, alertRadius, nearbyWaypoints, alarmMask) <= 0)
-        //     {
-        //         print("couldn't get any waypoints");
-        //         return null;
-        //     }
-        //     
-        //     List<Waypoint> nWaypoints = new List<Waypoint>(5);
-        //     Waypoint waypoint;
-        //
-        //     foreach (var coll in nearbyWaypoints)
-        //     {
-        //         waypoint = null;
-        //         if (coll.TryGetComponent(out waypoint))
-        //         {
-        //             nWaypoints.Add(waypoint);
-        //         }
-        //     }
-        //
-        //     return nWaypoints;
-        // }
         
         public List<Waypoint> GetAllNearbyWaypoints()
         {
-            nearbyWaypoints = Physics.OverlapSphere(Transform.position, alertRadius, alarmMask);
-            if (nearbyWaypoints.Length <= 0)
+            var numberOfWaypoints =
+                Physics.OverlapSphereNonAlloc(Transform.position, alertRadius, nearbyWaypoints, alarmMask);
+            
+            if (numberOfWaypoints <= 0)
             {
-                print("couldn't get any waypoints");
-                return null;
+                throw new NoNullAllowedException("Can't work with a null array");
             }
             
-            List<Waypoint> nWaypoints = new List<Waypoint>(nearbyWaypoints.Length);
+            var nWaypoints = new List<Waypoint>(numberOfWaypoints);
             Waypoint waypoint;
-
-            
-            foreach (var coll in nearbyWaypoints)
+        
+            foreach (var coll in nearbyWaypoints.Take(numberOfWaypoints))
             {
                 if (coll.TryGetComponent(out waypoint))
                 {
                     nWaypoints.Add(waypoint);
                 }
             }
-
-            // var limit = nWaypoints.Count < 3 ? nWaypoints.Count : 3;
-            //
-            // for (var i = 0; i < limit; i++)
-            // {
-            //     if (nWaypoints[i].TryGetComponent(out waypoint))
-            //     {
-            //         nWaypoints.Add(waypoint);
-            //     }
-            // }
-
+        
             return nWaypoints;
         }
 
         public override float ProcessSound(float intensity, Vector3 sourcePosition)
         {
-            Vector3 posDiff = Transform.position - sourcePosition;
-            float sqrdDistance = Vector3.SqrMagnitude(posDiff);
-            float volume = intensity / sqrdDistance;
-            Vector3 sourceDirection = (posDiff).normalized;
-            int obstacles = Physics.RaycastNonAlloc(Transform.position, sourceDirection, soundBlockingObstacles, posDiff.magnitude, soundObstacleMask);
+            var posDiff = sourcePosition - Transform.position;
+            var sqrdDistance = Vector3.SqrMagnitude(posDiff);
+            var volume = intensity / sqrdDistance;
+            var sourceDirection = posDiff.normalized;
+            var obstacles = Physics.RaycastNonAlloc(Transform.position, sourceDirection, soundBlockingObstacles, posDiff.magnitude, soundObstacleMask);
 
             volume -= obstacles * (0.4f * volume);
             volume = Mathf.Clamp(volume, 0, float.MaxValue);
 
-            if (volume >= alarmingSound)
-            {
-                _alertLevel = 2;
-                _waitTime = 0.1f;
-            }
-            else if (_alertLevel == 0)
-            {
-                _alertLevel = 1;
-                _waitTime = 2f;
-            }
+            Debug.DrawRay(Transform.position, posDiff, Color.red, 3.0f);
+            
+            #region DEBUGLOG
+            print($"volume relativo à distância: {intensity / sqrdDistance}" );
+            print($"quantidade de obstáculos: {obstacles}" );
+            print($"volume final recebido: {volume}" );
+            #endregion
+
+
+
+            SetAlertLevelBasedOnFloat(volume, alarmingSoundThreshold);
 
             _targetPosition = sourcePosition;
 
-            if (StateMachine.CurrentState != _attack || StateMachine.CurrentState != _pursuit)
+            //TODO Encapsular em outra funcao
+            if (!IsInReactiveState())
             {
                 StateMachine.ChangeState(_pursuit);
             }
             
             return volume;
-            
         }
 
 
@@ -531,6 +513,7 @@ namespace AI
         }
         
         #endregion
+        
 
 
 

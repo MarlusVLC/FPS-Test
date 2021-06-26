@@ -1,4 +1,5 @@
-﻿using DefaultNamespace;
+﻿using Auxiliary;
+using DefaultNamespace;
 using UnityEngine;
 
 namespace AI.States
@@ -8,7 +9,6 @@ namespace AI.States
         
         public override void Enter()
         {
-            // _entity.AlertLevel = 1;
         }
         
 

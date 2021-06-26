@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using Auxiliary;
 using Players;
 using TMPro;
 using UnityEngine;
@@ -39,18 +41,33 @@ namespace UI
 
         private void AssignPlayerWeapons()
         {
-            foreach (Gun weapon in playerWeaponHandler.HeldWeapons)
+            // foreach (Gun weapon in playerWeaponHandler.HeldWeapons)
+            // {
+            //     weapon.AmmoChanged += UpdateText;
+            // }
+
+            foreach (var weapon in playerWeaponHandler.HeldWeapons)
             {
-                weapon.AmmoChanged += UpdateText;
+                if (weapon is Gun gun)
+                {
+                    //TODO verificar conflitos
+                    // weapon.AmmoChanged += UpdateText;
+                }
             }
+            
+            playerWeaponHandler.HeldWeapons.Where(w => w is Gun ).
+            ForEach(g  => (g as Gun).
+            AmmoChanged += UpdateText);
         }
         
         private void DeAssignPlayerWeapons()
         {
-            foreach (Gun weapon in playerWeaponHandler.HeldWeapons)
-            {
-                weapon.AmmoChanged -= UpdateText;
-            }
+            // foreach (Gun weapon in playerWeaponHandler.HeldWeapons)
+            // {
+            //     weapon.AmmoChanged -= UpdateText;
+            // }
+            playerWeaponHandler.HeldWeapons.Where(w => w is Gun).ForEach(g  => (g as Gun).AmmoChanged -= UpdateText);
+
         }
         
         

@@ -12,8 +12,7 @@ namespace Auxiliary
         public static HashSet<int> GenerateDistinctNumbersWithinRange(int min, int max, int count)  //count 1 ou 2 ou 3
         {
             HashSet<int> result = new HashSet<int>();
-            
-            
+
             var possibilities = new List<int>(max-min);
 
             for (int i = min; i < possibilities.Capacity; i++)
@@ -22,7 +21,7 @@ namespace Auxiliary
             }
             //[0,1,2]
 
-            for (int i = 0; i < count; i++)
+            for (var i = 0; i < count; i++)
             {
                 var value = possibilities[Random.Range(0, possibilities.Count)]; //0 ou 1 ou 2
                 possibilities.Remove(value);

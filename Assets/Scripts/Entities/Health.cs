@@ -1,24 +1,31 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Weapons
+namespace Entities
 {
-    public class Target : MonoBehaviour
+    public class Health : MonoBehaviour
     {
-        public float health = 50f;
+        [SerializeField] float maxHealth = 50;
 
+        private float _currentHealth;
         private Destructible _destructible;
+        
+        public event Action<float> OnHealthPctChanged = delegate {  };  
 
         private void Start()
         {
+            _currentHealth = maxHealth;
             _destructible = GetComponent<Destructible>();
         }
 
         public void TakeDamage(float amount)
         {
-            health -= amount;
+            _currentHealth -= amount;
 
-            if (health <= 0f)
+            var currentHealthPct = _currentHealth / maxHealth;
+            OnHealthPctChanged(currentHealthPct);
+
+            if (_currentHealth <= 0)
             {
                 if (_destructible)
                 {

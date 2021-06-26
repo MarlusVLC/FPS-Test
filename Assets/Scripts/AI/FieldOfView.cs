@@ -8,6 +8,7 @@ namespace AI
     //Fonte: Sebastian Lague
     public class FieldOfView : MonoBehaviour
     {
+        [SerializeField] private string name;
         [SerializeField] private bool showCircumference;
         [SerializeField] private int numberOfExpectedTargets;
         [SerializeField] private float checkInterval;
@@ -61,11 +62,11 @@ namespace AI
             
             for (int i = 0; i < _numberOfTargetsInRadius; i++)
             {
-                Transform target = _targetsInViewRadius[i].transform;
-                Vector3 dirToTarget = (target.position - transform.position).normalized;
+                var target = _targetsInViewRadius[i].transform;
+                var dirToTarget = (target.position - transform.position).normalized;
                 if (Vector3.Angle(transform.forward, dirToTarget) < viewAngle / 2)
                 {
-                    float distToTarget = Vector3.Distance(transform.position, target.position);
+                    var distToTarget = Vector3.Distance(transform.position, target.position);
 
                     if (!Physics.Raycast(transform.position, dirToTarget, distToTarget, obstacleMask))
                     {

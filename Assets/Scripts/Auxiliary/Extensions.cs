@@ -1,9 +1,10 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-namespace DefaultNamespace
+namespace Auxiliary
 {
     public static class Extensions
     {
@@ -43,14 +44,31 @@ namespace DefaultNamespace
             textMesh.text = defaultText;
         }
 
-        public static short KeepNatural(this short num)
+        public static void KeepNatural(ref this short num)
         {
             if (num < 0)
             {
                 num = 0;
             }
-
-            return num;
         }
+
+        public static void ForEach<T>(this IEnumerable<T> enumeration, Action<T> action)
+        {
+            foreach (var item in enumeration)
+            {
+                action(item);
+            }
+        }
+
+
+        // public static bool OnFirst<T>(this IEnumerable<T>, Func<T> )
+        // {
+        //     foreach (var item in array)
+        //     {
+        //         
+        //     }
+        //     return true;
+        // }
+        
     }
 }

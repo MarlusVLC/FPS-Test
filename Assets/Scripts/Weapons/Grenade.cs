@@ -2,16 +2,19 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using DefaultNamespace;
+using Entities;
 using UnityEngine;
 using UnityEngine.Serialization;
 using Weapons;
 
-public class Grenade : MonoBehaviour
+public class Grenade : MonoCache
 {
 
     [SerializeField] private float delay = 5f;
     [SerializeField] private float explosionRadius = 5f; 
     [SerializeField] private float explosionForce = 700f;
+    [SerializeField] private float damage = 25;
+    [SerializeField] private LayerMask explodablesMask;
     [SerializeField] private GameObject explosionEffect;
     [SerializeField] private AudioClip explosionSound;
     [SerializeField] private AudioClip hitSound;
@@ -19,11 +22,14 @@ public class Grenade : MonoBehaviour
     float _countdown;
     private bool _hasExploded;
     private AudioSource _audio;
+    private Collider[] _colliders;
 
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         _audio = GetComponent<AudioSource>();
+        _colliders = new Collider[10];
     }
 
     void Start()
@@ -31,7 +37,6 @@ public class Grenade : MonoBehaviour
         _countdown = delay;
     }
 
-    // Update is called once per frame
     void Update()
     {
         _countdown -= Time.deltaTime;
@@ -45,48 +50,21 @@ public class Grenade : MonoBehaviour
 
     private IEnumerator Explode()
     {
-        // Mostrar efeito
         if (explosionSound)
             _audio.PlayOneShot(explosionSound);
-        Instantiate(explosionEffect, transform.position, transform.rotation);
+        Instantiate(explosionEffect, Transform.position, Transform.rotation);
         
-        //Fazer desaperecer
         transform.localScale = Vector3.zero;
 
-        //Pegar objetos próximos
-        Collider[] colliders = Physics.OverlapSphere(transform.position, explosionRadius);
+        yield return new WaitForSeconds(0.1f);
+        
+        var numberOfTargets = Physics.OverlapSphereNonAlloc(Transform.position, explosionRadius, _colliders, explodablesMask);
 
-        foreach (Collider nearbyObject in colliders)
+        for (int i = 0; i < numberOfTargets; i++)
         {
-            Rigidbody rb = nearbyObject.GetComponent<Rigidbody>();
-            if (rb)
-            {
-                //Adicionar forca
-                rb.AddExplosionForce(explosionForce, transform.position, explosionRadius);
-            }
-
-            Destructible dest = nearbyObject.GetComponent<Destructible>();
-            if (dest)
-            {
-                dest.Die();
-            }
+            _colliders[i].GetComponent<Rigidbody>()?.AddExplosionForce(explosionForce, Transform.position, explosionRadius);
+           _colliders[i].GetComponent<Health>()?.TakeDamage(damage);
         }
-        
-        
-        
-        
-        Collider[] collidersToMove = Physics.OverlapSphere(transform.position, explosionRadius);
-
-        foreach (Collider nearbyObject in collidersToMove)
-        {
-            Rigidbody rb = nearbyObject.GetComponent<Rigidbody>();
-            if (rb)
-            {
-                //Adicionar forca
-                rb.AddExplosionForce(explosionForce, transform.position, explosionRadius);
-            }
-        }
-
         if (explosionSound)
         {
             while (_audio.isPlaying)

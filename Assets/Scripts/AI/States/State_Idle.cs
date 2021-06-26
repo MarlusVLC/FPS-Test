@@ -5,8 +5,6 @@ namespace AI.States
 {
     public class State_Idle : State
     {
-        [SerializeField] private float minTime;
-        [SerializeField] private float maxTime;
 
         public override void Enter()
         {
@@ -31,7 +29,6 @@ namespace AI.States
         public override void Exit()
         {
             StopCoroutine(_entity.Wait(_entity.WaitTime));
-            _entity.WaitTime = Random.Range(_entity.MINWaitingTime, _entity.MAXWaitingTime);
 
         }
 

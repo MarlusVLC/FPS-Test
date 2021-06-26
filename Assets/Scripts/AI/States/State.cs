@@ -9,6 +9,7 @@ namespace AI
     {
         protected SimpleBot _entity;
         
+        
         protected override void  Awake()
         {
             base.Awake();
